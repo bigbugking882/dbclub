@@ -961,5 +961,52 @@ def cancel_activity_signup():
             'data': None
         })
 
+# 删除社团
+@app.route('/api/club/delete/<int:club_id>', methods=['DELETE'])
+def delete_club(club_id):
+    try:
+        if not club_id:
+            return jsonify({
+                'status': 400,
+                'message': '社团ID不能为空',
+                'data': None
+            })
+        
+        # 先删除相关的成员记录
+        delete_members_sql = text('DELETE FROM club_member WHERE club_id = :club_id')
+        db.session.execute(delete_members_sql, {'club_id': club_id})
+        
+        # 删除相关的活动报名记录
+        delete_signup_sql = text('''
+            DELETE FROM activity_signup 
+            WHERE activity_id IN (SELECT activity_id FROM activity WHERE club_id = :club_id)
+        ''')
+        db.session.execute(delete_signup_sql, {'club_id': club_id})
+        
+        # 删除相关的活动
+        delete_activities_sql = text('DELETE FROM activity WHERE club_id = :club_id')
+        db.session.execute(delete_activities_sql, {'club_id': club_id})
+        
+        # 删除社团
+        delete_club_sql = text('DELETE FROM club WHERE club_id = :club_id')
+        db.session.execute(delete_club_sql, {'club_id': club_id})
+        
+        db.session.commit()
+        
+        return jsonify({
+            'status': 200,
+            'message': '删除成功',
+            'data': None
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print("删除社团错误:", str(e))
+        return jsonify({
+            'status': 500,
+            'message': '删除失败',
+            'data': None
+        })
+
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)

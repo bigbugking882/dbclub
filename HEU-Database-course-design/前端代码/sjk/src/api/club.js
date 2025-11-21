@@ -22,3 +22,45 @@ export function updateClub(data) {
     data
   })
 }
+
+// 获取社团成员列表
+export function getClubMembers(params) {
+  return request({
+    url: '/api/club/members',
+    method: 'get',
+    params
+  })
+}
+
+// 获取社团活动列表
+export function getClubActivities(params) {
+  return request({
+    url: '/api/club/activities',
+    method: 'get',
+    params
+  })
+}
+
+// 移除社团成员
+export function removeClubMember(memberId) {
+  return request({
+    url: `/api/club/member/${memberId}`,
+    method: 'delete'
+  })
+}
+
+// 删除社团
+export function deleteClub(clubId) {
+  return request({
+    url: `/api/club/${clubId}`,
+    method: 'delete'
+  })
+}
+
+// 删除活动
+export function deleteActivity(activityId) {
+  return request({
+    url: `/api/activity/${activityId}`,
+    method: 'delete'
+  })
+}
