@@ -1,10 +1,7 @@
 <template>
   <div>
-    <div class="header">
-      校园社团管理系统---用户端
-    </div>
+    <div class="header">校园社团管理系统---用户端</div>
     <div class="body">
-      <!-- 左侧菜单 -->
       <div class="liner">
         <el-menu 
           default-active="1" 
@@ -28,8 +25,6 @@
           </el-menu-item>
         </el-menu>
       </div>
-
-      <!-- 右侧内容区 -->
       <div class="main">
         <user-club-list v-show="active === '1'"></user-club-list>
         <user-my-club v-show="active === '2'"></user-my-club>
@@ -45,26 +40,25 @@ import UserMyClub from './UserMyClub.vue'
 import UserActivity from './UserActivity.vue'
 
 export default {
-  components: {
-    UserClubList,
-    UserMyClub,
-    UserActivity
-  },
+  components: { UserClubList, UserMyClub, UserActivity },
   data() {
-    return {
-      active: '1'
-    }
+    return { active: '1' }
   },
   methods: {
     handleSelect(index) {
-      this.active = index
+      this.active = index;
+    }
+  },
+  created() {
+    // 检查登录状态
+    if (!localStorage.getItem('token')) {
+      this.$router.push('/login');
     }
   }
 }
 </script>
 
 <style scoped>
-/* 与MyManage.vue样式一致 */
 .header {
   width: 100%;
   height: 10vh;
