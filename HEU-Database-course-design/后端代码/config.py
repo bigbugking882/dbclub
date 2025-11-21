@@ -6,8 +6,8 @@ class BaseConfig(object):
     HOST = '127.0.0.1'
     PORT = "3306"
     USERNAME = "root"
-    PASSWORD = "" # 你自己电脑数据库的密码
-    DBNAME = 'wf_sql_ks'
+    PASSWORD = "123456" # 你自己电脑数据库的密码
+    DBNAME = 'campus_club'
 
     REDIS_HOST = '127.0.0.1'
     REDIS_PORT = 6379

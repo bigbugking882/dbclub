@@ -2,7 +2,7 @@
     <div class="container">
         <div class="login_box">
             <div class="head">
-                哈工程外卖平台
+                校园社团管理系统
             </div>
             <!-- 登录 -->
             <div v-show="target == 1">
@@ -38,7 +38,7 @@
         <!-- 注册表单 -->
         <div class="reg_box" v-show="target == 2">
             <div class="head">
-                哈工程外卖平台
+                校园社团管理系统
             </div>
             <div>
                 <el-form class="reg_form" :model="reg_form" :rules="reg_rules" ref="reg_form">
@@ -88,7 +88,7 @@
 <!-- 找回密码 -->
         <div class="forget_box" v-show="target == 3">
             <div class="head">
-                哈工程外卖平台
+                校园社团管理系统
             </div>
             <div>
                 <el-form class="reg_form" :model="findback_form" :rules="findback_rules" ref="findback_form">
@@ -147,7 +147,7 @@ export default {
             cb(new Error('包含大写字母、小写字母、数字，长度在6-12位之间'))
         };
         var checkMobile = (rule, value, cb) => {
-            const regMobile = /^(0|86|17951)?(13[0-9]|15[012356789]|17[678]|18[0-9]|14[57])[0-9]{8}$/;
+            const regMobile = /^\d{11}$/;
             if (regMobile.test(value)) {
                 // 合法的手机号码
                 return cb()

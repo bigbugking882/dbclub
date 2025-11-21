@@ -13,7 +13,10 @@ aaxios.interceptors.request.use((config) => {
     let access_token = localStorage.getItem('token');
     // console.log(access_token);
     if (access_token) {
-        config.headers.token = localStorage.getItem('token')
+        // 关键修改：使用Authorization头，格式为Bearer + 空格 + Token
+        config.headers.Authorization = `Bearer ${access_token}`;
+        // 移除原来的token头（如果后端不需要）
+        delete config.headers.token;
     }
 
     return config;
