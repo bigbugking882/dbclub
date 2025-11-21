@@ -2,7 +2,6 @@
   <div class="activity-manage">
     <div class="header">
       <h3>活动管理</h3>
-      <el-button type="primary" @click="showCreateDialog = true">创建活动</el-button>
     </div>
     
     <el-table :data="activityList" v-loading="loading">
@@ -19,10 +18,33 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button size="mini" @click="editActivity(scope.row)">编辑</el-button>
-          <el-button size="mini" type="danger" @click="deleteActivity(scope.row)">删除</el-button>
+          <el-button 
+            size="mini" 
+            type="success" 
+            @click="handleAudit(scope.row, 1)"
+            v-if="scope.row.status === 3"
+          >
+            通过
+          </el-button>
+          <el-button 
+            size="mini" 
+            type="danger" 
+            @click="handleAudit(scope.row, 0)"
+            v-if="scope.row.status === 3"
+          >
+            不通过
+          </el-button>
+          <el-button 
+            size="mini" 
+            type="danger" 
+            @click="deleteActivity(scope.row)"
+            v-if="scope.row.status !== 3"
+          >
+            删除
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -117,7 +139,7 @@ export default {
     loadActivities() {
       this.loading = true
       getActivities().then(res => {
-        this.activityList = res.data
+        this.activityList = res.data || []
         this.loading = false
       }).catch(() => {
         this.loading = false
@@ -125,7 +147,7 @@ export default {
     },
     loadClubs() {
       getClubs().then(res => {
-        this.clubList = res.data
+        this.clubList = res.data || []
       })
     },
     editActivity(activity) {
@@ -146,6 +168,41 @@ export default {
         }
       })
     },
+    // 审核活动
+    handleAudit(activity, auditStatus) {
+      const action = auditStatus === 1 ? '通过' : '不通过'
+      this.$confirm(`确定要${action} "${activity.title}" 的申请吗？`, '提示', {
+        type: 'warning'
+      }).then(() => {
+        this.loading = true
+        fetch('http://127.0.0.1:5000/api/activity/audit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            activity_id: activity.activity_id,
+            audit_status: auditStatus
+          })
+        })
+        .then(response => response.json())
+        .then(result => {
+          this.loading = false
+          if (result.status === 200) {
+            this.$message.success(result.message)
+            this.loadActivities()
+          } else {
+            throw new Error(result.message)
+          }
+        })
+        .catch(error => {
+          this.loading = false
+          this.$message.error('审核失败：' + (error.message || '未知错误'))
+        })
+      }).catch(() => {
+        this.$message.info('已取消操作')
+      })
+    },
     deleteActivity(activity) {
       this.$confirm('确定要删除这个活动吗？', '提示', {
         type: 'warning'
@@ -157,11 +214,21 @@ export default {
       })
     },
     getStatusType(status) {
-      const types = ['info', 'primary', 'success']
+      const types = {
+        0: 'info',    // 未开始
+        1: 'primary', // 进行中
+        2: 'success', // 已结束
+        3: 'warning'  // 待审核
+      }
       return types[status] || 'info'
     },
     getStatusText(status) {
-      const texts = ['未开始', '进行中', '已结束']
+      const texts = {
+        0: '未开始',
+        1: '进行中',
+        2: '已结束',
+        3: '待审核'
+      }
       return texts[status] || '未知'
     },
     resetForm() {

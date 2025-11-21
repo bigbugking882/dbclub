@@ -25,7 +25,26 @@
       <el-table-column label="操作" width="200" v-if="showActions">
         <template slot-scope="scope">
           <el-button size="mini" @click="manageClub(scope.row)">管理</el-button>
-          <el-button size="mini" type="danger" @click="deleteClub(scope.row)">解散</el-button>
+          <el-button 
+            size="mini" 
+            type="danger" 
+            @click="deleteClub(scope.row)"
+          >
+            解散
+          </el-button>
+        </template>
+      </el-table-column>
+      <!-- 我加入的社团显示退出按钮 -->
+      <el-table-column label="操作" width="100" v-else>
+        <template slot-scope="scope">
+          <el-button 
+            size="mini" 
+            type="danger" 
+            @click="quitClub(scope.row)"
+            v-if="scope.row.role === 0 && scope.row.audit_status === 1"
+          >
+            退出
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -375,6 +394,39 @@ export default {
       }).catch(() => {
         this.$message.info('已取消解散操作')
       })
+    },
+
+    // 新增退出社团方法
+    async quitClub(club) {
+      this.$confirm(`确定要退出"${club.club_name}"吗？`, '提示', {
+        type: 'warning'
+      }).then(async () => {
+        try {
+          const response = await fetch('http://127.0.0.1:5000/api/member/quit', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+              club_id: club.club_id,
+              user_id: this.user.id
+            })
+          });
+          const result = await response.json();
+          
+          if (result.status === 200) {
+            this.$message.success('退出社团成功');
+            this.$emit('refresh'); // 通知父组件刷新列表
+          } else {
+            throw new Error(result.message);
+          }
+        } catch (error) {
+          console.error('退出失败:', error);
+          this.$message.error('退出失败: ' + error.message);
+        }
+      }).catch(() => {
+        this.$message.info('已取消退出操作');
+      });
     },
 
     getRoleType(role) {

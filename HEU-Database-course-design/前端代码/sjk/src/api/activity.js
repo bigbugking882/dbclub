@@ -55,3 +55,11 @@ export function cancelActivitySignup(data) {
     data
   })
 }
+
+export function auditActivity(data) {
+  return request({
+    url: '/api/activity/audit',
+    method: 'post',
+    data
+  })
+}

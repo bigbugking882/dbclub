@@ -63,3 +63,11 @@ export function deleteClub(clubId) {
     method: 'delete'
   })
 }
+
+export function auditClub(data) {
+  return request({
+    url: '/api/club/audit',
+    method: 'post',
+    data
+  })
+}

@@ -43,24 +43,31 @@
           {{ formatDate(scope.row.end_time) }}
         </template>
       </el-table-column>
-      <el-table-column prop="status" label="状态" width="100">
+      <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
           <el-tag :type="getStatusType(scope.row.status)">
             {{ getStatusText(scope.row.status) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="150">
         <template slot-scope="scope">
           <el-button 
             size="mini" 
             type="primary"
             @click="handleSignup(scope.row)"
-            :disabled="scope.row.status !== 0 || isActivitySigned(scope.row)"
+            :disabled="scope.row.status !== 0"
+            class="action-button"
           >
-            {{ isActivitySigned(scope.row) ? '已报名' : '报名' }}
+            报名
           </el-button>
-          <el-button size="mini" @click="viewActivityDetail(scope.row)">详情</el-button>
+          <el-button 
+            size="mini" 
+            @click="viewActivityDetail(scope.row)"
+            class="action-button"
+          >
+            详情
+          </el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -156,59 +163,14 @@
         </el-button>
       </div>
     </el-dialog>
-
-    <!-- 活动详情对话框 -->
-    <el-dialog 
-      :title="currentActivity ? currentActivity.title : '活动详情'" 
-      :visible.sync="showActivityDetailDialog"
-      width="700px"
-    >
-      <div v-if="currentActivity" class="activity-detail">
-        <el-descriptions :column="2" border>
-          <el-descriptions-item label="活动名称">{{ currentActivity.title }}</el-descriptions-item>
-          <el-descriptions-item label="主办社团">{{ currentActivity.club_name }}</el-descriptions-item>
-          <el-descriptions-item label="活动地点">{{ currentActivity.location }}</el-descriptions-item>
-          <el-descriptions-item label="活动状态">
-            <el-tag :type="getStatusType(currentActivity.status)">
-              {{ getStatusText(currentActivity.status) }}
-            </el-tag>
-          </el-descriptions-item>
-          <el-descriptions-item label="开始时间">{{ formatDate(currentActivity.start_time) }}</el-descriptions-item>
-          <el-descriptions-item label="结束时间">{{ formatDate(currentActivity.end_time) }}</el-descriptions-item>
-          <el-descriptions-item label="活动描述" :span="2">
-            <div class="activity-content">{{ currentActivity.content || '暂无详细描述' }}</div>
-          </el-descriptions-item>
-        </el-descriptions>
-      </div>
-      <div slot="footer">
-        <el-button @click="showActivityDetailDialog = false">关闭</el-button>
-        <el-button 
-          type="primary" 
-          @click="handleSignup(currentActivity)"
-          v-if="currentActivity && currentActivity.status === 0 && !isActivitySigned(currentActivity)"
-        >
-          立即报名
-        </el-button>
-        <el-button 
-          type="info" 
-          disabled
-          v-if="currentActivity && currentActivity.status !== 0"
-        >
-          {{ currentActivity.status === 1 ? '活动进行中' : '活动已结束' }}
-        </el-button>
-        <el-button 
-          type="success" 
-          disabled
-          v-if="currentActivity && isActivitySigned(currentActivity)"
-        >
-          已报名
-        </el-button>
-      </div>
-    </el-dialog>
   </div>
 </template>
 
 <script>
+// 导入所有需要的API函数
+import { getActivities, createActivity, signupActivity } from '@/api/activity'
+import { getClubs } from '@/api/club'
+import { getMyClubs } from '@/api/member'
 import { formatDate } from '@/utils/date'
 
 export default {
@@ -220,11 +182,8 @@ export default {
       myClubs: [],
       loading: false,
       showCreateDialog: false,
-      showActivityDetailDialog: false,
       filterClub: '',
       filterStatus: '',
-      currentActivity: null,
-      signedActivities: [],
       activityForm: {
         title: '',
         club_id: null,
@@ -252,147 +211,75 @@ export default {
     this.loadActivities()
     this.loadClubs()
     this.loadMyClubs()
-    this.loadSignedActivities()
   },
   methods: {
-    async loadActivities() {
+    loadActivities() {
       this.loading = true
-      try {
-        const params = new URLSearchParams()
-        if (this.filterClub) params.append('club_id', this.filterClub)
-        if (this.filterStatus) params.append('status', this.filterStatus)
-        
-        const response = await fetch(`http://127.0.0.1:5000/api/activities?${params}`)
-        const result = await response.json()
-        
-        if (result.status === 200) {
-          this.activityList = result.data || []
-        } else {
-          throw new Error(result.message)
-        }
-      } catch (error) {
-        console.error('加载活动列表失败:', error)
-        this.$message.error('加载活动列表失败')
-      } finally {
+      const params = {}
+      if (this.filterClub) params.club_id = this.filterClub
+      if (this.filterStatus) params.status = this.filterStatus
+      
+      // 使用 getActivities 函数
+      getActivities(params).then(res => {
+        this.activityList = res.data
         this.loading = false
-      }
+      }).catch(() => {
+        this.loading = false
+      })
     },
-
-    async loadClubs() {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/api/clubs')
-        const result = await response.json()
-        
-        if (result.status === 200) {
-          this.clubList = result.data || []
-        }
-      } catch (error) {
-        console.error('加载社团列表失败:', error)
-      }
+    loadClubs() {
+      // 使用 getClubs 函数
+      getClubs().then(res => {
+        this.clubList = res.data
+      })
     },
-
-    async loadMyClubs() {
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/api/user/${this.user.id}/clubs`)
-        const result = await response.json()
-        
-        if (result.status === 200) {
-          this.myClubs = result.data.filter(club => club.audit_status === 1) || []
-        }
-      } catch (error) {
-        console.error('加载我的社团失败:', error)
-      }
+    loadMyClubs() {
+      // 使用 getMyClubs 函数
+      getMyClubs(this.user.id).then(res => {
+        this.myClubs = res.data.filter(club => club.audit_status === 1)
+      })
     },
-
-    async loadSignedActivities() {
-      try {
-        const response = await fetch(`http://127.0.0.1:5000/api/user/${this.user.id}/activities`)
-        const result = await response.json()
-        
-        if (result.status === 200) {
-          this.signedActivities = result.data.filter(activity => activity.is_signed === 1) || []
-        }
-      } catch (error) {
-        console.error('加载已报名活动失败:', error)
-      }
-    },
-
-    async handleCreateActivity() {
-      this.$refs.activityForm.validate(async (valid) => {
+    handleCreateActivity() {
+      this.$refs.activityForm.validate(valid => {
         if (valid) {
-          try {
-            const response = await fetch('http://127.0.0.1:5000/api/activity/create', {
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-              },
-              body: JSON.stringify(this.activityForm)
-            })
-            const result = await response.json()
-            
-            if (result.status === 200) {
-              this.$message.success('创建成功')
-              this.showCreateDialog = false
-              this.$refs.activityForm.resetFields()
-              this.loadActivities()
-            } else {
-              throw new Error(result.message)
-            }
-          } catch (error) {
-            this.$message.error('创建失败：' + (error.message || '请稍后重试'))
-          }
+          // 使用 createActivity 函数
+          createActivity(this.activityForm).then((res) => {
+            // 显示审核提示
+            this.$message.success(res.message || '创建成功，等待管理员审核')
+            this.showCreateDialog = false
+            this.$refs.activityForm.resetFields()
+            this.loadActivities()
+          }).catch(error => {
+            this.$message.error('创建失败: ' + (error.message || '未知错误'))
+          })
         }
       })
     },
-
-    async handleSignup(activity) {
+    handleSignup(activity) {
       this.$confirm(`确定要报名参加 ${activity.title} 吗？`, '提示', {
         type: 'info'
-      }).then(async () => {
-        try {
-          const response = await fetch('http://127.0.0.1:5000/api/activity/signup', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              activity_id: activity.activity_id,
-              user_id: this.user.id
-            })
-          })
-          const result = await response.json()
-          
-          if (result.status === 200) {
-            this.$message.success('报名成功')
-            this.loadSignedActivities()
-          } else {
-            throw new Error(result.message)
-          }
-        } catch (error) {
-          this.$message.error('报名失败：' + (error.message || '请稍后重试'))
-        }
+      }).then(() => {
+        // 使用 signupActivity 函数
+        signupActivity({
+          activity_id: activity.activity_id,
+          user_id: this.user.id
+        }).then(() => {
+          this.$message.success('报名成功')
+          this.$bus.$emit('activity-signed')
+        })
       })
     },
-
     viewActivityDetail(activity) {
-      this.currentActivity = activity
-      this.showActivityDetailDialog = true
+      this.$message.info(`查看 ${activity.title} 的详情`)
     },
-
-    isActivitySigned(activity) {
-      return this.signedActivities.some(signed => signed.activity_id === activity.activity_id)
-    },
-
     getStatusType(status) {
       const types = ['info', 'primary', 'success']
       return types[status] || 'info'
     },
-
     getStatusText(status) {
       const texts = ['未开始', '进行中', '已结束']
       return texts[status] || '未知'
     },
-
     formatDate
   }
 }
@@ -403,26 +290,26 @@ export default {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 20px;
 }
-
 .filter .el-select {
   width: 150px;
   margin-right: 10px;
-  margin-bottom: 20px;
 }
 
-.activity-detail {
-  padding: 10px 0;
+/* 统一按钮样式 */
+.activity-list >>> .action-button {
+  min-width: 60px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 12px;
+  font-size: 12px;
 }
 
-.activity-content {
-  line-height: 1.6;
-  color: #606266;
-  white-space: pre-wrap;
-}
-
-.dialog-footer {
-  text-align: center;
+/* 确保报名和详情按钮大小一致 */
+.activity-list >>> .el-button--mini {
+  min-width: 60px;
+  height: 28px;
+  line-height: 28px;
+  padding: 0 12px;
 }
 </style>

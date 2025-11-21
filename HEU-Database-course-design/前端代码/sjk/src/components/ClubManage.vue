@@ -2,7 +2,6 @@
   <div class="club-manage">
     <div class="header">
       <h3>社团管理</h3>
-      <el-button type="primary" @click="showCreateDialog = true">创建社团</el-button>
     </div>
     
     <el-table :data="clubList" v-loading="loading">
@@ -13,8 +12,8 @@
       <el-table-column prop="create_time" label="创建时间"></el-table-column>
       <el-table-column prop="status" label="状态">
         <template slot-scope="scope">
-          <el-tag :type="scope.row.status === 1 ? 'success' : 'info'">
-            {{ scope.row.status === 1 ? '正常' : '停用' }}
+          <el-tag :type="getStatusType(scope.row.status)">
+            {{ getStatusText(scope.row.status) }}
           </el-tag>
         </template>
       </el-table-column>
@@ -23,8 +22,25 @@
           <el-button size="mini" @click="editClub(scope.row)">编辑</el-button>
           <el-button 
             size="mini" 
+            type="success" 
+            @click="handleAudit(scope.row, 1)"
+            v-if="scope.row.status === 2"
+          >
+            通过
+          </el-button>
+          <el-button 
+            size="mini" 
+            type="danger" 
+            @click="handleAudit(scope.row, 0)"
+            v-if="scope.row.status === 2"
+          >
+            不通过
+          </el-button>
+          <el-button 
+            size="mini" 
             class="status-toggle-btn"
             @click="toggleClubStatus(scope.row)"
+            v-if="scope.row.status !== 2"
           >
             {{ scope.row.status === 1 ? '停用' : '启用' }}
           </el-button>
@@ -65,7 +81,6 @@
             :rows="4"
           ></el-input>
         </el-form-item>
-        <!-- 在管理端创建社团时选择创始人 -->
         <el-form-item label="创始人" prop="founder_id" v-if="!isEdit">
           <el-select v-model="clubForm.founder_id" placeholder="请选择创始人" style="width: 100%">
             <el-option 
@@ -94,7 +109,7 @@ export default {
   data() {
     return {
       clubList: [],
-      userList: [], // 用户列表用于选择创始人
+      userList: [],
       loading: false,
       showCreateDialog: false,
       isEdit: false,
@@ -103,25 +118,24 @@ export default {
         club_name: '',
         category: '',
         description: '',
-        founder_id: null // 添加创始人ID字段
+        founder_id: null
       },
       clubRules: {
         club_name: [{ required: true, message: '请输入社团名称', trigger: 'blur' }],
         category: [{ required: true, message: '请选择社团类别', trigger: 'change' }],
-        founder_id: [{ required: true, message: '请选择创始人', trigger: 'change' }] // 添加创始人验证规则
+        founder_id: [{ required: true, message: '请选择创始人', trigger: 'change' }]
       }
     }
   },
   mounted() {
     this.loadClubs()
-    this.loadUsers() // 加载用户列表
+    this.loadUsers()
   },
   methods: {
     loadClubs() {
       this.loading = true
       getClubs().then(res => {
-        // 显示所有社团，包括停用的
-        console.log('加载的社团数据:', res.data) // 调试用，查看返回的数据
+        console.log('加载的社团数据:', res.data)
         this.clubList = res.data || []
         this.loading = false
       }).catch((error) => {
@@ -142,7 +156,7 @@ export default {
         club_name: club.club_name,
         category: club.category,
         description: club.description || '',
-        founder_id: club.founder_id // 编辑时也设置创始人ID
+        founder_id: club.founder_id
       }
       this.showCreateDialog = true
     },
@@ -151,12 +165,9 @@ export default {
         if (valid) {
           const saveMethod = this.isEdit ? updateClub : createClub
           
-          // 准备提交的数据
           const submitData = { ...this.clubForm }
           
-          // 如果是编辑，可能不需要 founder_id，根据后端API调整
           if (this.isEdit) {
-            // 编辑时可能不需要更新创始人，根据实际需求调整
             delete submitData.founder_id
           }
           
@@ -169,6 +180,41 @@ export default {
             this.$message.error('操作失败：' + (error.message || '未知错误'))
           })
         }
+      })
+    },
+    // 审核社团
+    handleAudit(club, auditStatus) {
+      const action = auditStatus === 1 ? '通过' : '不通过'
+      this.$confirm(`确定要${action} "${club.club_name}" 的申请吗？`, '提示', {
+        type: 'warning'
+      }).then(() => {
+        this.loading = true
+        fetch('http://127.0.0.1:5000/api/club/audit', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            club_id: club.club_id,
+            audit_status: auditStatus
+          })
+        })
+        .then(response => response.json())
+        .then(result => {
+          this.loading = false
+          if (result.status === 200) {
+            this.$message.success(result.message)
+            this.loadClubs()
+          } else {
+            throw new Error(result.message)
+          }
+        })
+        .catch(error => {
+          this.loading = false
+          this.$message.error('审核失败：' + (error.message || '未知错误'))
+        })
+      }).catch(() => {
+        this.$message.info('已取消操作')
       })
     },
     toggleClubStatus(club) {
@@ -236,6 +282,22 @@ export default {
       if (this.$refs.clubForm) {
         this.$refs.clubForm.resetFields()
       }
+    },
+    getStatusType(status) {
+      const types = {
+        0: 'info',    // 停用
+        1: 'success', // 正常
+        2: 'warning'  // 待审核
+      }
+      return types[status] || 'info'
+    },
+    getStatusText(status) {
+      const texts = {
+        0: '停用',
+        1: '正常', 
+        2: '待审核'
+      }
+      return texts[status] || '未知'
     }
   }
 }
@@ -249,7 +311,6 @@ export default {
   margin-bottom: 20px;
 }
 
-/* 停用/启用按钮样式 - 使用更美观的蓝色系 */
 .club-manage >>> .status-toggle-btn {
   background-color: #409eff;
   border-color: #409eff;
@@ -262,20 +323,12 @@ export default {
   color: white;
 }
 
-.club-manage >>> .status-toggle-btn:focus {
-  background-color: #409eff;
-  border-color: #409eff;
-  color: white;
-}
-
-/* 停用状态标签使用灰色，更中性 */
 .club-manage >>> .el-tag--info {
   background-color: #909399;
   border-color: #909399;
   color: white;
 }
 
-/* 解散按钮样式保持原有的danger红色 */
 .club-manage >>> .el-button--danger {
   background-color: #f56c6c;
   border-color: #f56c6c;

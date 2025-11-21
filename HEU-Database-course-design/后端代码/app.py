@@ -242,7 +242,143 @@ def get_clubs():
             'data': None
         })
 
-# 创建社团
+# 获取待审核社团
+@app.route('/api/clubs/pending', methods=['GET'])
+def get_pending_clubs():
+    try:
+        sql = text('''
+            SELECT c.*, u.username as founder_name 
+            FROM club c 
+            LEFT JOIN user u ON c.founder_id = u.id 
+            WHERE c.audit_status = 0
+            ORDER BY c.create_time DESC
+        ''')
+        result = db.session.execute(sql)
+        clubs = []
+        for row in result:
+            clubs.append({
+                'club_id': row[0],
+                'club_name': row[1],
+                'description': row[2],
+                'founder_id': row[3],
+                'create_time': str(row[4]),
+                'status': row[5],
+                'category': row[6],
+                'founder_name': row[7],
+                'audit_status': row[8]  # 新添加的字段
+            })
+        
+        return jsonify({
+            'status': 200,
+            'message': '获取成功',
+            'data': clubs
+        })
+        
+    except Exception as e:
+        print("获取待审核社团错误:", str(e))
+        return jsonify({
+            'status': 500,
+            'message': '获取失败',
+            'data': None
+        })
+
+# 审核社团
+@app.route('/api/club/audit', methods=['POST'])
+def audit_club():
+    try:
+        data = request.json
+        club_id = data.get('club_id')
+        audit_status = data.get('audit_status')  # 1-通过, 0-不通过
+        
+        print(f"审核社团请求: club_id={club_id}, audit_status={audit_status}")  # 调试日志
+        
+        if not club_id or audit_status is None:
+            return jsonify({
+                'status': 400,
+                'message': '参数不能为空',
+                'data': None
+            })
+        
+        # 审核状态映射：1-通过 -> 状态1(正常), 0-不通过 -> 状态0(停用)
+        new_status = 1 if audit_status == 1 else 0
+        
+        # 更新社团状态
+        sql = text('UPDATE club SET status = :status WHERE club_id = :club_id')
+        result = db.session.execute(sql, {'status': new_status, 'club_id': club_id})
+        
+        print(f"更新影响行数: {result.rowcount}")  # 调试日志
+        
+        # 如果审核通过，同时通过创始人的成员申请
+        if audit_status == 1:
+            member_sql = text('''
+                UPDATE club_member SET audit_status = 1 
+                WHERE club_id = :club_id AND role = 1
+            ''')
+            db.session.execute(member_sql, {'club_id': club_id})
+        
+        db.session.commit()
+        
+        action = "通过" if audit_status == 1 else "拒绝"
+        return jsonify({
+            'status': 200,
+            'message': f'审核{action}成功',
+            'data': None
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print("审核社团错误:", str(e))
+        return jsonify({
+            'status': 500,
+            'message': f'操作失败: {str(e)}',
+            'data': None
+        })
+
+# 审核活动
+@app.route('/api/activity/audit', methods=['POST'])
+def audit_activity():
+    try:
+        data = request.json
+        activity_id = data.get('activity_id')
+        audit_status = data.get('audit_status')  # 1-通过, 0-不通过
+        
+        print(f"审核活动请求: activity_id={activity_id}, audit_status={audit_status}")  # 调试日志
+        
+        if not activity_id or audit_status is None:
+            return jsonify({
+                'status': 400,
+                'message': '参数不能为空',
+                'data': None
+            })
+        
+        # 审核状态映射：1-通过 -> 状态0(未开始), 0-不通过 -> 状态2(已结束表示不通过)
+        new_status = 0 if audit_status == 1 else 2
+        
+        # 更新活动状态
+        sql = text('UPDATE activity SET status = :status WHERE activity_id = :activity_id')
+        result = db.session.execute(sql, {'status': new_status, 'activity_id': activity_id})
+        
+        print(f"更新影响行数: {result.rowcount}")  # 调试日志
+        
+        db.session.commit()
+        
+        action = "通过" if audit_status == 1 else "拒绝"
+        return jsonify({
+            'status': 200,
+            'message': f'审核{action}成功',
+            'data': None
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print("审核活动错误:", str(e))
+        return jsonify({
+            'status': 500,
+            'message': f'操作失败: {str(e)}',
+            'data': None
+        })
+
+# 创建社团 - 根据用户角色决定审核状态
 @app.route('/api/club/create', methods=['POST'])
 def create_club():
     try:
@@ -270,16 +406,26 @@ def create_club():
                 'data': None
             })
         
+        # 检查创建者角色
+        user_sql = text('SELECT role FROM user WHERE id = :user_id')
+        user_result = db.session.execute(user_sql, {'user_id': founder_id})
+        user = user_result.fetchone()
+        
+        # 根据用户角色决定状态：管理员直接通过(1)，普通用户待审核(2)
+        club_status = 1 if user and user[0] in [1, 2] else 2  # 1-社团管理员, 2-系统管理员
+        member_audit_status = 1 if user and user[0] in [1, 2] else 0
+        
         # 创建社团
         insert_sql = text('''
-            INSERT INTO club (club_name, description, founder_id, create_time, category) 
-            VALUES (:name, :desc, :founder, CURDATE(), :category)
+            INSERT INTO club (club_name, description, founder_id, create_time, category, status) 
+            VALUES (:name, :desc, :founder, CURDATE(), :category, :status)
         ''')
         db.session.execute(insert_sql, {
             'name': club_name,
             'desc': description,
             'founder': founder_id,
-            'category': category
+            'category': category,
+            'status': club_status
         })
         
         # 获取新创建的社团ID
@@ -288,18 +434,20 @@ def create_club():
         # 创始人自动成为社长
         member_sql = text('''
             INSERT INTO club_member (user_id, club_id, role, join_time, audit_status) 
-            VALUES (:user_id, :club_id, 1, CURDATE(), 1)
+            VALUES (:user_id, :club_id, 1, CURDATE(), :audit_status)
         ''')
         db.session.execute(member_sql, {
             'user_id': founder_id,
-            'club_id': club_id
+            'club_id': club_id,
+            'audit_status': member_audit_status
         })
         
         db.session.commit()
         
+        message = '创建成功' if club_status == 1 else '创建成功，等待管理员审核'
         return jsonify({
             'status': 200,
-            'message': '创建成功',
+            'message': message,
             'data': {'club_id': club_id}
         })
         
@@ -387,7 +535,6 @@ def get_activities():
             SELECT a.*, c.club_name 
             FROM activity a 
             LEFT JOIN club c ON a.club_id = c.club_id 
-            WHERE 1=1
         '''
         params = {}
         
@@ -399,7 +546,7 @@ def get_activities():
             sql += ' AND a.status = :status'
             params['status'] = status
             
-        sql += ' ORDER BY a.club_id ASC'
+        sql += ' ORDER BY a.activity_id ASC'
         
         result = db.session.execute(text(sql), params)
         activities = []
@@ -431,7 +578,7 @@ def get_activities():
             'data': None
         })
 
-# 创建活动
+# 创建活动 - 根据用户角色决定审核状态
 @app.route('/api/activity/create', methods=['POST'])
 def create_activity():
     try:
@@ -450,9 +597,22 @@ def create_activity():
                 'data': None
             })
         
+        # 检查创建者权限（通过社团关联查询用户角色）
+        user_sql = text('''
+            SELECT u.role 
+            FROM user u 
+            INNER JOIN club c ON u.id = c.founder_id 
+            WHERE c.club_id = :club_id
+        ''')
+        user_result = db.session.execute(user_sql, {'club_id': club_id})
+        user = user_result.fetchone()
+        
+        # 根据用户角色决定状态：管理员直接通过(0-未开始)，普通用户待审核(3)
+        activity_status = 0 if user and user[0] in [1, 2] else 3
+        
         sql = text('''
-            INSERT INTO activity (club_id, title, content, start_time, end_time, location) 
-            VALUES (:club_id, :title, :content, :start_time, :end_time, :location)
+            INSERT INTO activity (club_id, title, content, start_time, end_time, location, status) 
+            VALUES (:club_id, :title, :content, :start_time, :end_time, :location, :status)
         ''')
         db.session.execute(sql, {
             'club_id': club_id,
@@ -460,13 +620,15 @@ def create_activity():
             'content': content,
             'start_time': start_time,
             'end_time': end_time,
-            'location': location
+            'location': location,
+            'status': activity_status
         })
         db.session.commit()
         
+        message = '创建成功' if activity_status == 0 else '创建成功，等待管理员审核'
         return jsonify({
             'status': 200,
-            'message': '创建成功',
+            'message': message,
             'data': None
         })
         
@@ -824,6 +986,55 @@ def join_club():
         return jsonify({
             'status': 500,
             'message': '申请失败',
+            'data': None
+        })
+
+# 退出社团
+@app.route('/api/member/quit', methods=['POST'])
+def quit_club():
+    try:
+        data = request.json
+        club_id = data.get('club_id')
+        user_id = data.get('user_id')
+        
+        if not club_id or not user_id:
+            return jsonify({
+                'status': 400,
+                'message': '社团ID和用户ID不能为空',
+                'data': None
+            })
+        
+        # 检查是否是社团创始人，不允许退出
+        check_founder_sql = text('SELECT founder_id FROM club WHERE club_id = :club_id')
+        founder = db.session.execute(check_founder_sql, {'club_id': club_id}).fetchone()
+        
+        if founder and founder[0] == user_id:
+            return jsonify({
+                'status': 400,
+                'message': '创始人不能退出社团',
+                'data': None
+            })
+        
+        # 执行退出操作
+        delete_sql = text('DELETE FROM club_member WHERE user_id = :user_id AND club_id = :club_id')
+        db.session.execute(delete_sql, {
+            'user_id': user_id,
+            'club_id': club_id
+        })
+        db.session.commit()
+        
+        return jsonify({
+            'status': 200,
+            'message': '退出成功',
+            'data': None
+        })
+        
+    except Exception as e:
+        db.session.rollback()
+        print("退出社团错误:", str(e))
+        return jsonify({
+            'status': 500,
+            'message': '退出失败',
             'data': None
         })
 

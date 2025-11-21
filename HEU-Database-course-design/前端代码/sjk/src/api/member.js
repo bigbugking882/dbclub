@@ -38,3 +38,12 @@ export function getMyClubs(userId) {
     method: 'get'
   })
 }
+
+// 退出社团
+export function quitClub(data) {
+  return request({
+    url: '/api/member/quit',
+    method: 'post',
+    data
+  })
+}
