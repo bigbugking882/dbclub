@@ -1,32 +1,18 @@
 import Vue from 'vue'
-import VueRouter from 'vue-router'
-import LogRes from '@/components/MyLogReg'
-import User from '@/components/MyUser'
-import Manage from '@/components/MyManage'
+import Router from 'vue-router'
+import Login from '@/views/Login'
+import Register from '@/views/Register'
+import UserHome from '@/views/UserHome'
+import AdminHome from '@/views/AdminHome'
 
-Vue.use(VueRouter)
+Vue.use(Router)
 
-export default new VueRouter({
-  mode: 'history',
+export default new Router({
   routes: [
-    {
-      path: '/',
-      redirect: '/login'
-    },
-    {
-      path: '/login',
-      component: LogRes,
-      meta: { title: "登录注册" }
-    },
-    {
-      path: '/user',
-      component: User,
-      meta: { title: "社团系统-用户端" }
-    },
-    {
-      path: '/manage',
-      component: Manage,
-      meta: { title: "社团系统-管理端" }
-    }
+    { path: '/', redirect: '/login' },
+    { path: '/login', component: Login },
+    { path: '/register', component: Register },
+    { path: '/user', component: UserHome },
+    { path: '/admin', component: AdminHome }
   ]
 })
