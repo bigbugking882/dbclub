@@ -161,6 +161,7 @@
 </template>
 
 <script>
+import { deleteClub } from '@/api/club'  // 导入解散社团的API
 import { formatDate } from '@/utils/date'
 
 export default {
@@ -213,13 +214,11 @@ export default {
         
         if (result.status === 200) {
           this.clubMembers = result.data || []
-          // 成功时不显示任何提示
         } else {
           throw new Error(result.message)
         }
       } catch (error) {
         console.error('加载成员数据失败:', error)
-        // 只在失败时显示错误提示
         if (error.message.includes('Failed to fetch')) {
           this.$message.error('网络连接失败，请检查后端服务')
         } else {
@@ -241,13 +240,11 @@ export default {
         
         if (result.status === 200) {
           this.clubActivities = result.data || []
-          // 成功时不显示任何提示
         } else {
           throw new Error(result.message)
         }
       } catch (error) {
         console.error('加载活动数据失败:', error)
-        // 只在失败时显示错误提示
         if (error.message.includes('Failed to fetch')) {
           this.$message.error('网络连接失败，请检查后端服务')
         } else {
@@ -309,7 +306,7 @@ export default {
           
           if (result.status === 200) {
             this.$message.success('成员移除成功')
-            this.loadClubMembers() // 重新加载成员列表
+            this.loadClubMembers()
           } else {
             throw new Error(result.message)
           }
@@ -340,7 +337,7 @@ export default {
           
           if (result.status === 200) {
             this.$message.success('活动删除成功')
-            this.loadClubActivities() // 重新加载活动列表
+            this.loadClubActivities()
           } else {
             throw new Error(result.message)
           }
@@ -352,19 +349,31 @@ export default {
     },
 
     async deleteClub(club) {
-      this.$confirm(`确定要解散 "${club.club_name}" 吗？此操作不可撤销！`, '警告', {
+      this.$confirm(`确定要解散 "${club.club_name}" 吗？此操作将删除社团所有相关数据，且不可恢复！`, '警告', {
         type: 'warning',
         confirmButtonText: '确定解散',
         confirmButtonClass: 'el-button--danger'
       }).then(async () => {
         try {
-          // 注意：需要先在后端添加删除社团的接口
-          this.$message.info('解散社团功能开发中...')
-          // 这里可以调用解散社团的API
+          this.loading = true
+          
+          // 使用导入的API方法
+          const result = await deleteClub(club.club_id)
+          
+          if (result.status === 200) {
+            this.$message.success('解散社团成功')
+            this.$emit('refresh') // 触发父组件刷新列表
+          } else {
+            throw new Error(result.message || '解散失败')
+          }
         } catch (error) {
           console.error('解散失败:', error)
           this.$message.error('解散失败: ' + error.message)
+        } finally {
+          this.loading = false
         }
+      }).catch(() => {
+        this.$message.info('已取消解散操作')
       })
     },
 

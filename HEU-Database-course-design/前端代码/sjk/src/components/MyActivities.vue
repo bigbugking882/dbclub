@@ -42,36 +42,44 @@ export default {
   data() {
     return {
       activeTab: 'signed',
-      signedActivities: [],    // 已报名活动
-      createdActivities: [],   // 我创建的活动
-      historyActivities: [],   // 历史活动
+      allActivities: [],
       user: JSON.parse(localStorage.getItem('user') || '{}')
+    }
+  },
+  computed: {
+    signedActivities() {
+      return this.allActivities.filter(activity => 
+        activity.is_signed === 1 && activity.status !== 2
+      )
+    },
+    createdActivities() {
+      return this.allActivities.filter(activity => 
+        activity.creator_id === this.user.id
+      )
+    },
+    historyActivities() {
+      return this.allActivities.filter(activity => 
+        activity.status === 2 || activity.is_signed === 0
+      )
     }
   },
   mounted() {
     this.loadMyActivities()
     this.$bus.$on('activity-signed', this.loadMyActivities)
   },
+  // 添加监听器，当标签页切换时刷新数据
+  watch: {
+    activeTab() {
+      this.loadMyActivities()
+    }
+  },
   beforeDestroy() {
-    // 组件销毁时移除监听
     this.$bus.$off('activity-signed', this.loadMyActivities)
   },
   methods: {
     loadMyActivities() {
       getMyActivities(this.user.id).then(res => {
-        const allActivities = res.data
-        // 已报名活动（包括待开始和进行中）
-        this.signedActivities = allActivities.filter(activity => 
-          activity.is_signed === 1 && activity.status !== 2
-        )
-        // 我创建的活动
-        this.createdActivities = allActivities.filter(activity => 
-          activity.creator_id === this.user.id
-        )
-        // 历史活动（已结束或已取消报名）
-        this.historyActivities = allActivities.filter(activity => 
-          activity.status === 2 || activity.is_signed === 0
-        )
+        this.allActivities = res.data
       })
     }
   }

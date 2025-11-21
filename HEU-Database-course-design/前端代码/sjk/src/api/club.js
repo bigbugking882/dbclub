@@ -49,18 +49,17 @@ export function removeClubMember(memberId) {
   })
 }
 
-// 删除社团
-export function deleteClub(clubId) {
-  return request({
-    url: `/api/club/${clubId}`,
-    method: 'delete'
-  })
-}
-
 // 删除活动
 export function deleteActivity(activityId) {
   return request({
     url: `/api/activity/${activityId}`,
+    method: 'delete'
+  })
+}
+
+export function deleteClub(clubId) {
+  return request({
+    url: `/api/club/delete/${clubId}`,
     method: 'delete'
   })
 }

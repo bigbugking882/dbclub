@@ -28,22 +28,34 @@ export default {
   data() {
     return {
       activeTab: 'created',
-      createdClubs: [],
-      joinedClubs: [],
-      pendingClubs: [],
+      allClubs: [],
       user: JSON.parse(localStorage.getItem('user') || '{}')
+    }
+  },
+  computed: {
+    createdClubs() {
+      return this.allClubs.filter(club => club.role === 1)
+    },
+    joinedClubs() {
+      return this.allClubs.filter(club => club.role === 0 && club.audit_status === 1)
+    },
+    pendingClubs() {
+      return this.allClubs.filter(club => club.audit_status === 0)
     }
   },
   mounted() {
     this.loadMyClubs()
   },
+  // 添加监听器，当标签页切换时刷新数据
+  watch: {
+    activeTab() {
+      this.loadMyClubs()
+    }
+  },
   methods: {
     loadMyClubs() {
       getMyClubs(this.user.id).then(res => {
-        const allClubs = res.data
-        this.createdClubs = allClubs.filter(club => club.role === 1) // 社长
-        this.joinedClubs = allClubs.filter(club => club.role === 0 && club.audit_status === 1) // 普通成员且已通过
-        this.pendingClubs = allClubs.filter(club => club.audit_status === 0) // 待审核
+        this.allClubs = res.data
       })
     }
   }

@@ -28,44 +28,54 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200" v-if="showActions">
+      <el-table-column label="操作" width="250" v-if="showActions">
         <template slot-scope="scope">
-          <!-- 已报名活动：显示详情和取消报名 -->
-          <el-button 
-            size="mini" 
-            @click="viewActivityDetail(scope.row)"
-            v-if="type === 'signed'"
-          >
-            详情
-          </el-button>
-          <el-button 
-            size="mini" 
-            type="danger" 
-            @click="cancelSignup(scope.row)"
-            v-if="type === 'signed' && scope.row.status === 0"
-          >
-            取消报名
-          </el-button>
+          <!-- 已报名活动的操作 -->
+          <template v-if="type === 'signed'">
+            <el-button 
+              size="mini" 
+              @click="viewActivityDetail(scope.row)"
+            >
+              详情
+            </el-button>
+            <el-button 
+              size="mini" 
+              type="danger" 
+              @click="cancelSignup(scope.row)"
+              :disabled="scope.row.status !== 0"
+            >
+              取消报名
+            </el-button>
+          </template>
           
-          <!-- 我创建的活动：只显示编辑 -->
-          <el-button 
-            size="mini" 
-            type="primary" 
-            @click="editActivity(scope.row)"
-            v-if="type === 'created'"
-          >
-            编辑
-          </el-button>
+          <!-- 我创建的活动操作 -->
+          <template v-if="type === 'created'">
+            <el-button 
+              size="mini" 
+              type="primary" 
+              @click="editActivity(scope.row)"
+              :disabled="scope.row.status !== 0"
+            >
+              编辑
+            </el-button>
+            <el-button 
+              size="mini" 
+              class="cancel-activity-btn"
+              @click="cancelActivity(scope.row)"
+              :disabled="scope.row.status !== 0"
+            >
+              取消活动
+            </el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
 
-    <!-- 活动详情对话框（只在已报名活动中使用） -->
+    <!-- 活动详情对话框 -->
     <el-dialog 
       :title="currentActivity ? currentActivity.title : '活动详情'" 
       :visible.sync="showDetailDialog"
       width="600px"
-      v-if="type === 'signed'"
     >
       <div v-if="currentActivity" class="activity-detail">
         <el-descriptions :column="1" border>
@@ -79,13 +89,15 @@
               {{ getStatusText(currentActivity.status) }}
             </el-tag>
           </el-descriptions-item>
-          <el-descriptions-item label="报名状态">
+          <el-descriptions-item label="报名状态" v-if="type === 'signed'">
             <el-tag :type="currentActivity.is_signed === 1 ? 'success' : 'info'">
               {{ currentActivity.is_signed === 1 ? '已报名' : '未报名' }}
             </el-tag>
           </el-descriptions-item>
           <el-descriptions-item label="活动描述">
-            <div class="activity-content">{{ currentActivity.content || '暂无详细描述' }}</div>
+            <div class="activity-content">
+              {{ currentActivity.content || '暂无详细描述' }}
+            </div>
           </el-descriptions-item>
         </el-descriptions>
       </div>
@@ -97,7 +109,7 @@
 </template>
 
 <script>
-import { cancelActivitySignup } from '@/api/activity'
+import { cancelActivitySignup, updateActivity } from '@/api/activity'
 import { formatDate } from '@/utils/date'
 
 export default {
@@ -120,62 +132,134 @@ export default {
     return {
       loading: false,
       showDetailDialog: false,
-      currentActivity: null,
-      user: JSON.parse(localStorage.getItem('user') || '{}')
+      currentActivity: null
     }
   },
   methods: {
     viewActivityDetail(activity) {
-      // 只在已报名活动中显示详情
-      if (this.type === 'signed') {
-        this.currentActivity = activity
-        this.showDetailDialog = true
-      }
+      this.currentActivity = activity
+      this.showDetailDialog = true
     },
-
+    
     cancelSignup(activity) {
       this.$confirm(`确定要取消报名 ${activity.title} 吗？`, '提示', {
         type: 'warning'
       }).then(() => {
+        this.loading = true
         cancelActivitySignup({
           activity_id: activity.activity_id,
-          user_id: this.user.id
+          user_id: JSON.parse(localStorage.getItem('user') || '{}').id
         }).then(() => {
+          this.loading = false
           this.$message.success('取消报名成功')
           this.$emit('refresh')
+        }).catch(error => {
+          this.loading = false
+          this.$message.error('取消报名失败: ' + (error.message || '未知错误'))
         })
       })
     },
-
+    
     editActivity(activity) {
       this.$message.info(`编辑 ${activity.title}`)
       // 这里可以跳转到编辑页面或打开编辑对话框
-      // 例如：this.$router.push(`/edit-activity/${activity.activity_id}`)
     },
-
+    
+    cancelActivity(activity) {
+      this.$confirm(
+        `确定要取消未开始的活动 "${activity.title}" 吗？此操作不可恢复！`,
+        '取消活动',
+        {
+          type: 'warning',
+          confirmButtonText: '确定取消',
+          cancelButtonText: '再想想'
+        }
+      ).then(() => {
+        this.loading = true
+        // 更新活动状态为已结束（状态2）来表示活动已取消
+        updateActivity({
+          activity_id: activity.activity_id,
+          status: 2 // 设置为已结束状态
+        }).then(() => {
+          this.loading = false
+          this.$message.success('活动取消成功')
+          this.$emit('refresh')
+        }).catch(error => {
+          this.loading = false
+          this.$message.error('取消活动失败: ' + (error.message || '未知错误'))
+        })
+      }).catch(() => {
+        this.$message.info('已取消操作')
+      })
+    },
+    
     getStatusType(status) {
       const types = ['info', 'primary', 'success']
       return types[status] || 'info'
     },
-
+    
     getStatusText(status) {
       const texts = ['未开始', '进行中', '已结束']
       return texts[status] || '未知'
     },
-
+    
     formatDate
   }
 }
 </script>
 
 <style scoped>
+/* 可以添加一些样式优化 */
+.activity-table >>> .el-button {
+  margin-bottom: 5px;
+}
+.activity-table >>> .el-button + .el-button {
+  margin-left: 5px;
+}
+
+/* 取消活动按钮样式 - 模仿解散社团的红色样式 */
+.activity-table >>> .cancel-activity-btn {
+  background-color: #f56c6c;
+  border-color: #f56c6c;
+  color: white;
+}
+
+.activity-table >>> .cancel-activity-btn:hover {
+  background-color: #f78989;
+  border-color: #f78989;
+  color: white;
+}
+
+.activity-table >>> .cancel-activity-btn:focus {
+  background-color: #f56c6c;
+  border-color: #f56c6c;
+  color: white;
+}
+
+.activity-table >>> .cancel-activity-btn.is-disabled {
+  background-color: #fbc4c4;
+  border-color: #fab6b6;
+  color: #fff;
+}
+
+.activity-table >>> .cancel-activity-btn.is-disabled:hover {
+  background-color: #fbc4c4;
+  border-color: #fab6b6;
+  color: #fff;
+}
+
+/* 活动详情样式 */
 .activity-detail {
   padding: 10px 0;
 }
 
 .activity-content {
-  line-height: 1.6;
-  color: #606266;
+  max-height: 200px;
+  overflow-y: auto;
+  padding: 8px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
   white-space: pre-wrap;
+  line-height: 1.5;
 }
 </style>

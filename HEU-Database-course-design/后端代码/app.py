@@ -119,7 +119,7 @@ def user_register():
 @app.route('/api/users', methods=['GET'])
 def get_users():
     try:
-        sql = text('SELECT id, username, telephone, role, create_time FROM user ORDER BY create_time DESC')
+        sql = text('SELECT id, username, telephone, role, create_time FROM user ORDER BY id ASC')
         result = db.session.execute(sql)
         users = []
         for row in result:
@@ -212,8 +212,7 @@ def get_clubs():
             SELECT c.*, u.username as founder_name 
             FROM club c 
             LEFT JOIN user u ON c.founder_id = u.id 
-            WHERE c.status = 1
-            ORDER BY c.create_time DESC
+            ORDER BY c.club_id ASC
         ''')
         result = db.session.execute(sql)
         clubs = []
@@ -400,7 +399,7 @@ def get_activities():
             sql += ' AND a.status = :status'
             params['status'] = status
             
-        sql += ' ORDER BY a.create_time DESC'
+        sql += ' ORDER BY a.club_id ASC'
         
         result = db.session.execute(text(sql), params)
         activities = []
@@ -672,21 +671,21 @@ def get_club_members():
             sql += ' AND cm.audit_status = :audit_status'
             params['audit_status'] = audit_status
             
-        sql += ' ORDER BY cm.join_time DESC'
+        sql += ' ORDER BY cm.club_id ASC, cm.user_id ASC'  # 先按社团ID排序，再按用户ID排序
         
         result = db.session.execute(text(sql), params)
         members = []
         for row in result:
             members.append({
-                'member_id': row[0],
-                'user_id': row[1],
-                'club_id': row[2],
-                'role': row[3],
-                'join_time': str(row[4]),
-                'audit_status': row[5],
-                'username': row[6],
-                'telephone': row[7],
-                'club_name': row[8]
+                'member_id': row[0],      # 成员关系ID（保留但不显示）
+                'user_id': row[1],        # 用户ID - 这个作为显示的ID
+                'club_id': row[2],        # 社团ID
+                'role': row[3],           # 角色
+                'join_time': str(row[4]), # 加入时间
+                'audit_status': row[5],   # 审核状态
+                'username': row[6],       # 用户名
+                'telephone': row[7],      # 手机号
+                'club_name': row[8]       # 社团名称
             })
         
         return jsonify({
@@ -838,7 +837,7 @@ def get_my_clubs(user_id):
             LEFT JOIN club c ON cm.club_id = c.club_id
             LEFT JOIN user u ON c.founder_id = u.id
             WHERE cm.user_id = :user_id
-            ORDER BY cm.join_time DESC
+            ORDER BY cm.member_id ASC
         ''')
         result = db.session.execute(sql, {'user_id': user_id})
         clubs = []
@@ -897,7 +896,7 @@ def get_my_activities(user_id):
             LEFT JOIN activity_signup asu ON a.activity_id = asu.activity_id AND asu.user_id = :user_id
             LEFT JOIN user u ON c.founder_id = u.id
             WHERE asu.user_id = :user_id OR c.founder_id = :user_id
-            ORDER BY a.create_time DESC
+            ORDER BY a.activity_id ASC
         ''')
         result = db.session.execute(sql, {'user_id': user_id})
         activities = []
