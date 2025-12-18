@@ -105,6 +105,45 @@
         <el-button @click="showDetailDialog = false">关闭</el-button>
       </div>
     </el-dialog>
+
+    <!-- 编辑活动对话框 -->
+    <el-dialog 
+      :title="isEdit ? '编辑活动' : '创建活动'" 
+      :visible.sync="showActivityForm"
+      width="600px"
+    >
+      <el-form :model="activityForm" :rules="activityRules" ref="activityForm" label-width="100px">
+        <el-form-item label="活动名称" prop="title">
+          <el-input v-model="activityForm.title"></el-input>
+        </el-form-item>
+        <el-form-item label="活动地点" prop="location">
+          <el-input v-model="activityForm.location"></el-input>
+        </el-form-item>
+        <el-form-item label="开始时间" prop="start_time">
+          <el-date-picker
+            v-model="activityForm.start_time"
+            type="datetime"
+            placeholder="选择开始时间"
+            value-format="yyyy-MM-dd HH:mm:ss"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="结束时间" prop="end_time">
+          <el-date-picker
+            v-model="activityForm.end_time"
+            type="datetime"
+            placeholder="选择结束时间"
+            value-format="yyyy-MM-dd HH:mm:ss"
+          ></el-date-picker>
+        </el-form-item>
+        <el-form-item label="活动描述" prop="content">
+          <el-input type="textarea" v-model="activityForm.content" :rows="4"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer">
+        <el-button @click="showActivityForm = false">取消</el-button>
+        <el-button type="primary" @click="saveActivity">保存</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -132,7 +171,25 @@ export default {
     return {
       loading: false,
       showDetailDialog: false,
-      currentActivity: null
+      currentActivity: null,
+      // 编辑活动相关
+      showActivityForm: false,
+      isEdit: false,
+      activityForm: {
+        activity_id: null,
+        title: '',
+        club_id: null,
+        location: '',
+        start_time: '',
+        end_time: '',
+        content: ''
+      },
+      activityRules: {
+        title: [{ required: true, message: '请输入活动名称', trigger: 'blur' }],
+        location: [{ required: true, message: '请输入活动地点', trigger: 'blur' }],
+        start_time: [{ required: true, message: '请选择开始时间', trigger: 'change' }],
+        end_time: [{ required: true, message: '请选择结束时间', trigger: 'change' }]
+      }
     }
   },
   methods: {
@@ -161,8 +218,25 @@ export default {
     },
     
     editActivity(activity) {
-      this.$message.info(`编辑 ${activity.title}`)
-      // 这里可以跳转到编辑页面或打开编辑对话框
+      this.isEdit = true
+      this.activityForm = { ...activity }
+      this.activityForm.start_time = new Date(activity.start_time)
+      this.activityForm.end_time = new Date(activity.end_time)
+      this.showActivityForm = true
+    },
+    
+    saveActivity() {
+      this.$refs.activityForm.validate(valid => {
+        if (valid) {
+          updateActivity(this.activityForm).then(() => {
+            this.$message.success('活动更新成功')
+            this.showActivityForm = false
+            this.$emit('refresh')
+          }).catch(error => {
+            this.$message.error('更新失败: ' + (error.message || '未知错误'))
+          })
+        }
+      })
     },
     
     cancelActivity(activity) {
@@ -200,7 +274,7 @@ export default {
     
     getStatusText(status) {
       const texts = ['未开始', '进行中', '已结束']
-      return texts[status] || '未知'
+      return texts[status] || '待审核'
     },
     
     formatDate
@@ -209,7 +283,7 @@ export default {
 </script>
 
 <style scoped>
-/* 可以添加一些样式优化 */
+/* 原有样式保持不变 */
 .activity-table >>> .el-button {
   margin-bottom: 5px;
 }
@@ -217,7 +291,7 @@ export default {
   margin-left: 5px;
 }
 
-/* 取消活动按钮样式 - 模仿解散社团的红色样式 */
+/* 取消活动按钮样式 */
 .activity-table >>> .cancel-activity-btn {
   background-color: #f56c6c;
   border-color: #f56c6c;
@@ -230,25 +304,6 @@ export default {
   color: white;
 }
 
-.activity-table >>> .cancel-activity-btn:focus {
-  background-color: #f56c6c;
-  border-color: #f56c6c;
-  color: white;
-}
-
-.activity-table >>> .cancel-activity-btn.is-disabled {
-  background-color: #fbc4c4;
-  border-color: #fab6b6;
-  color: #fff;
-}
-
-.activity-table >>> .cancel-activity-btn.is-disabled:hover {
-  background-color: #fbc4c4;
-  border-color: #fab6b6;
-  color: #fff;
-}
-
-/* 活动详情样式 */
 .activity-detail {
   padding: 10px 0;
 }
