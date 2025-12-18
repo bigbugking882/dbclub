@@ -148,11 +148,14 @@
                 </el-table-column>
                 <el-table-column label="操作" width="150">
                   <template slot-scope="scope">
-                    <el-button size="mini" @click="openActivityDialog(scope.row)">编辑</el-button>
+                    <el-button size="mini" @click="openActivityDialog(scope.row)"
+                    :disabled="[1, 2].includes(scope.row.status)"
+                    >编辑</el-button>
                     <el-button 
                       size="mini" 
                       type="danger" 
                       @click="deleteClubActivity(scope.row)"
+                      :disabled="[1, 2].includes(scope.row.status)"
                       v-if="currentClub.role === 1"
                     >
                       删除

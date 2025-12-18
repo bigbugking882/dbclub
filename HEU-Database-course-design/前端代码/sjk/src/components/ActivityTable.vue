@@ -54,7 +54,7 @@
               size="mini" 
               type="primary" 
               @click="editActivity(scope.row)"
-              :disabled="scope.row.status !== 0"
+              :disabled="![0, 3].includes(scope.row.status)"
             >
               编辑
             </el-button>
@@ -62,7 +62,7 @@
               size="mini" 
               class="cancel-activity-btn"
               @click="cancelActivity(scope.row)"
-              :disabled="scope.row.status !== 0"
+              :disabled="![0, 3].includes(scope.row.status)"
             >
               取消活动
             </el-button>
@@ -269,7 +269,7 @@ export default {
     
     getStatusType(status) {
       const types = ['info', 'primary', 'success']
-      return types[status] || 'info'
+      return types[status] || 'warning'
     },
     
     getStatusText(status) {
