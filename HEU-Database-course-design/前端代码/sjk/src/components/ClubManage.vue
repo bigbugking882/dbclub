@@ -105,8 +105,9 @@
 </template>
 
 <script>
-import { getClubs, createClub, updateClub, deleteClub } from '@/api/club'
+import { getClubs, createClub, updateClub, deleteClub, getClubMembers } from '@/api/club'
 import { getUsers } from '@/api/user'
+import { auditMember } from '@/api/member'
 
 export default {
   name: 'ClubManage',
@@ -208,7 +209,36 @@ export default {
           this.loading = false
           if (result.status === 200) {
             this.$message.success(result.message)
-            this.loadClubs()
+            // 如果是通过社团审核，尝试把创始人的成员申请一并设为已通过（成为社长）
+            if (auditStatus === 1) {
+              // 查询该社团的成员记录，查找创始人对应的 member 记录并通过
+              getClubMembers({ club_id: club.club_id }).then(mres => {
+                const members = mres.data || []
+                const founderMember = members.find(m => m.user_id === club.founder_id || m.id === club.founder_id)
+                if (founderMember) {
+                  // 仅在未通过时进行通过操作
+                  if (founderMember.audit_status !== 1) {
+                    auditMember(founderMember.member_id || founderMember.id, 1).then(() => {
+                      // silent success
+                      this.loadClubs()
+                    }).catch(() => {
+                      // ignore
+                      this.loadClubs()
+                    })
+                  } else {
+                    this.loadClubs()
+                  }
+                } else {
+                  // 找不到成员记录，仍刷新列表并提示管理员后端可能需要创建成员记录
+                  this.loadClubs()
+                }
+              }).catch(() => {
+                // 无论如何刷新列表
+                this.loadClubs()
+              })
+            } else {
+              this.loadClubs()
+            }
           } else {
             throw new Error(result.message)
           }

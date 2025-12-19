@@ -284,4 +284,8 @@ export default {
   align-items: center;
   margin-bottom: 20px;
 }
+.filters .el-select {
+  width: 150px;
+  margin-right: 10px;
+}
 </style>

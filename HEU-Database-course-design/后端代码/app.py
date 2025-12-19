@@ -876,7 +876,7 @@ def get_club_members():
             sql += ' AND cm.audit_status = :audit_status'
             params['audit_status'] = audit_status
             
-        sql += ' ORDER BY cm.club_id ASC, cm.role DESC, cm.user_id ASC'  # 先按社团ID排序，再按用户ID排序
+        sql += ' ORDER BY cm.club_id ASC, cm.role DESC, cm.join_time ASC'  # 先按社团ID排序，再按加入时间排序
         
         result = db.session.execute(text(sql), params)
         members = []
@@ -975,51 +975,64 @@ def remove_member():
         })
 
 # 加入社团
+# 加入社团接口
 @app.route('/api/club/join', methods=['POST'])
 def join_club():
     try:
         data = request.json
-        club_id = data.get('club_id')
         user_id = data.get('user_id')
+        club_id = data.get('club_id')
         
-        if not club_id or not user_id:
+        if not user_id or not club_id:
             return jsonify({
                 'status': 400,
-                'message': '社团ID和用户ID不能为空',
+                'message': '参数不完整',
                 'data': None
             })
         
-        # 检查是否已加入
+        # 检查是否已加入该社团（状态为通过）
         check_sql = text('''
-            SELECT member_id FROM club_member 
-            WHERE user_id = :user_id AND club_id = :club_id
+            SELECT * FROM club_member 
+            WHERE user_id = :user_id AND club_id = :club_id AND audit_status = 1
         ''')
-        existing_member = db.session.execute(check_sql, {
+        existing = db.session.execute(check_sql, {
             'user_id': user_id,
             'club_id': club_id
         }).fetchone()
         
-        if existing_member:
+        if existing:
             return jsonify({
                 'status': 400,
-                'message': '已申请加入该社团',
+                'message': '您已加入该社团',
                 'data': None
             })
         
-        # 申请加入社团
-        insert_sql = text('''
-            INSERT INTO club_member (user_id, club_id, role, join_time, audit_status) 
-            VALUES (:user_id, :club_id, 0, CURDATE(), 0)
+        # 如果是已拒绝状态，允许重新申请（更新记录）
+        update_sql = text('''
+            UPDATE club_member 
+            SET join_time = NOW(), audit_status = 0 
+            WHERE user_id = :user_id AND club_id = :club_id AND audit_status = 2
         ''')
-        db.session.execute(insert_sql, {
+        result = db.session.execute(update_sql, {
             'user_id': user_id,
             'club_id': club_id
         })
-        db.session.commit()
         
+        # 如果没有更新记录，则插入新申请
+        if result.rowcount == 0:
+            insert_sql = text('''
+                INSERT INTO club_member (user_id, club_id, role, join_time, audit_status)
+                VALUES (:user_id, :club_id, 0, NOW(), 0)
+            ''')
+            db.session.execute(insert_sql, {
+                'user_id': user_id,
+                'club_id': club_id
+            })
+        
+        db.session.commit()
         return jsonify({
             'status': 200,
-            'message': '申请已提交，等待审核',
+            'message': '申请已提交，请等待审核',
             'data': None
         })
         
@@ -1028,10 +1041,10 @@ def join_club():
         print("加入社团错误:", str(e))
         return jsonify({
             'status': 500,
-            'message': '申请失败',
+            'message': '操作失败',
             'data': None
         })
-
+    
 # 退出社团
 @app.route('/api/member/quit', methods=['POST'])
 def quit_club():
