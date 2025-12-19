@@ -273,12 +273,12 @@ export default {
     },
     
     getStatusType(status) {
-      const types = ['info', 'primary', 'success']
+      const types = ['info', 'primary', 'success', 'warning', 'danger']
       return types[status] || 'warning'
     },
     
     getStatusText(status) {
-      const texts = ['未开始', '进行中', '已结束']
+      const texts = ['未开始', '进行中', '已结束', '待审核', '未通过']
       return texts[status] || '待审核'
     },
     

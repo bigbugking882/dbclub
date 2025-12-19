@@ -351,8 +351,8 @@ def audit_activity():
                 'data': None
             })
         
-        # 审核状态映射：1-通过 -> 状态0(未开始), 0-不通过 -> 状态2(已结束表示不通过)
-        new_status = 0 if audit_status == 1 else 2
+        # 审核通过 -> 状态0(未开始)，审核不通过 -> 状态4(审核不通过)
+        new_status = 0 if audit_status == 1 else 4
         
         # 更新活动状态
         sql = text('UPDATE activity SET status = :status WHERE activity_id = :activity_id')
@@ -633,8 +633,9 @@ def create_activity():
         start_time = data.get('start_time')
         end_time = data.get('end_time')
         location = data.get('location')
+        creator_id = data.get('creator_id')
         
-        if not all([club_id, title, start_time, end_time, location]):
+        if not all([club_id, title, start_time, end_time, location, creator_id]):
             return jsonify({
                 'status': 400,
                 'message': '请填写完整信息',
@@ -645,18 +646,17 @@ def create_activity():
         user_sql = text('''
             SELECT u.role 
             FROM user u 
-            INNER JOIN club c ON u.id = c.founder_id 
-            WHERE c.club_id = :club_id
+            WHERE u.id = :creator_id
         ''')
-        user_result = db.session.execute(user_sql, {'club_id': club_id})
+        user_result = db.session.execute(user_sql, {'creator_id': creator_id})
         user = user_result.fetchone()
         
         # 根据用户角色决定状态：管理员直接通过(0-未开始)，普通用户待审核(3)
         activity_status = 0 if user and user[0] in [1, 2] else 3
         
         sql = text('''
-            INSERT INTO activity (club_id, title, content, start_time, end_time, location, status) 
-            VALUES (:club_id, :title, :content, :start_time, :end_time, :location, :status)
+            INSERT INTO activity (club_id, title, content, start_time, end_time, location, status, creator_id) 
+            VALUES (:club_id, :title, :content, :start_time, :end_time, :location, :status, :creator_id)
         ''')
         db.session.execute(sql, {
             'club_id': club_id,
@@ -665,7 +665,8 @@ def create_activity():
             'start_time': start_time,
             'end_time': end_time,
             'location': location,
-            'status': activity_status
+            'status': activity_status,
+            'creator_id': creator_id
         })
         db.session.commit()
         

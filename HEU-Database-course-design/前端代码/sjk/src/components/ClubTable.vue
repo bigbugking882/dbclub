@@ -697,13 +697,13 @@ export default {
 
     // 审核状态类型映射（保持原有逻辑不变）
     getStatusType(status) {
-      const types = ['', 'success', 'danger'] 
+      const types = ['', 'success', 'danger', 'warning', 'danger'] 
       return types[status] || ''
     },
 
     // 审核状态文本映射（保持原有逻辑不变）
     getStatusText(status) {
-      const texts = ['待审核', '已通过', '已拒绝']
+      const texts = ['待审核', '已通过', '已拒绝', '未通过']
       return texts[status] || '待审核'
     },
 

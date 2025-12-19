@@ -471,7 +471,7 @@ export default {
              activity.is_signed === 1 || 
              this.signedActivityIds.has(activity.activity_id) ||
              activity.creator_id === this.user.id ||
-             activity.status === 3
+             [3, 4].includes(activity.status)
     },
     // 获取报名按钮文本
     getSignupButtonText(activity) {
@@ -501,11 +501,11 @@ export default {
       }
     },
     getStatusType(status) {
-      const types = ['info', 'primary', 'success', 'warning']
+      const types = ['info', 'primary', 'success', 'warning', 'danger']
       return types[status] || 'info'
     },
     getStatusText(status) {
-      const texts = ['未开始', '进行中', '已结束', '待审核']
+      const texts = ['未开始', '进行中', '已结束', '待审核', '未通过']
       return texts[status] || '未知'
     },
     formatDate

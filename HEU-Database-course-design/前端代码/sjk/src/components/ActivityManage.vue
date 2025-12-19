@@ -247,7 +247,8 @@ export default {
         0: 'info',    // 未开始
         1: 'primary', // 进行中
         2: 'success', // 已结束
-        3: 'warning'  // 待审核
+        3: 'warning',  // 待审核
+        4: 'danger'    // 未通过
       }
       return types[status] || 'info'
     },
@@ -256,9 +257,10 @@ export default {
         0: '未开始',
         1: '进行中',
         2: '已结束',
-        3: '待审核'
+        3: '待审核',
+        4: '未通过'
       }
-      return texts[status] || '未知'
+      return texts[status] || 'info'
     },
     resetForm() {
       this.activityForm = {
