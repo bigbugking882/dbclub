@@ -22,30 +22,30 @@
     </div>
     
     <el-table :data="memberList" v-loading="loading">
-      <el-table-column label="序号" width="80">
+      <el-table-column label="序号" width="60">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column prop="username" label="用户名"></el-table-column>
-      <el-table-column prop="telephone" label="手机号"></el-table-column>
-      <el-table-column prop="club_name" label="社团"></el-table-column>
-      <el-table-column prop="role" label="角色">
+      <el-table-column prop="username" label="用户名" width="120"></el-table-column>
+      <el-table-column prop="telephone" label="手机号" width="140"></el-table-column>
+      <el-table-column prop="club_name" label="社团" width="120"></el-table-column>
+      <el-table-column prop="role" label="角色" width="100">
         <template slot-scope="scope">
           <el-tag :type="scope.row.role === 1 ? 'danger' : 'primary'">
             {{ getRoleText(scope.row.role) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="join_time" label="加入时间"></el-table-column>
-      <el-table-column prop="audit_status" label="审核状态">
+      <el-table-column prop="join_time" label="加入时间" width="120"></el-table-column>
+      <el-table-column prop="audit_status" label="审核状态" width="100">
         <template slot-scope="scope">
           <el-tag :type="getAuditType(scope.row.audit_status)">
             {{ getAuditText(scope.row.audit_status) }}
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="200">
+      <el-table-column label="操作" width="250">
         <template slot-scope="scope">
           <el-button 
             v-if="scope.row.audit_status === 0"

@@ -172,7 +172,9 @@ export default {
       this.loading = true
       // 使用 getClubs 函数
       getClubs().then(res => {
-        let clubs = res.data
+        let clubs = res.data || []
+        // 先过滤：只显示已通过审核或处于正常运行的社团，避免展示新建的待审核社团
+        clubs = clubs.filter(club => (club.audit_status === 1) || (club.status === 1))
         if (this.filterCategory) {
           clubs = clubs.filter(club => club.category === this.filterCategory)
         }

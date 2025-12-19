@@ -1,21 +1,39 @@
 <template>
   <div class="activity-manage">
     <div class="header">
-      <h3>活动管理</h3>
-    </div>
+        <h3>活动管理</h3>
+        <div class="filters">
+          <el-select v-model="filterClub" placeholder="选择社团" @change="loadActivities">
+            <el-option label="全部社团" value=""></el-option>
+            <el-option 
+              v-for="club in clubList" 
+              :key="club.club_id" 
+              :label="club.club_name" 
+              :value="club.club_id"
+            ></el-option>
+          </el-select>
+          <el-select v-model="filterStatus" placeholder="按状态筛选" @change="loadActivities">
+            <el-option label="全部状态" value=""></el-option>
+            <el-option label="未开始" :value="0"></el-option>
+            <el-option label="进行中" :value="1"></el-option>
+            <el-option label="已结束" :value="2"></el-option>
+            <el-option label="待审核" :value="3"></el-option>
+          </el-select>
+        </div>
+      </div>
     
     <el-table :data="activityList" v-loading="loading">
-      <el-table-column label="序号" width="80">
+      <el-table-column label="序号" width="60">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
         </template>
       </el-table-column>
-      <el-table-column prop="title" label="活动名称"></el-table-column>
-      <el-table-column prop="club_name" label="所属社团"></el-table-column>
-      <el-table-column prop="location" label="活动地点"></el-table-column>
-      <el-table-column prop="start_time" label="开始时间" width="180"></el-table-column>
-      <el-table-column prop="end_time" label="结束时间" width="180"></el-table-column>
-      <el-table-column prop="status" label="状态">
+      <el-table-column prop="title" label="活动名称" width="140"></el-table-column>
+      <el-table-column prop="club_name" label="所属社团" width="120"></el-table-column>
+      <el-table-column prop="location" label="活动地点" width="140"></el-table-column>
+      <el-table-column prop="start_time" label="开始时间" width="110"></el-table-column>
+      <el-table-column prop="end_time" label="结束时间" width="110"></el-table-column>
+      <el-table-column prop="status" label="状态" width="80">
         <template slot-scope="scope">
           <el-tag :type="getStatusType(scope.row.status)">
             {{ getStatusText(scope.row.status) }}
@@ -115,6 +133,8 @@ export default {
       activityList: [],
       clubList: [],
       loading: false,
+      filterClub: '',
+      filterStatus: '',
       showCreateDialog: false,
       isEdit: false,
       activityForm: {
@@ -142,10 +162,15 @@ export default {
   methods: {
     loadActivities() {
       this.loading = true
-      getActivities().then(res => {
+      const params = {}
+      if (this.filterClub) params.club_id = this.filterClub
+      if (this.filterStatus !== '' && this.filterStatus !== null) params.status = Number(this.filterStatus)
+
+      getActivities(params).then(res => {
         this.activityList = res.data || []
         this.loading = false
       }).catch(() => {
+        this.activityList = []
         this.loading = false
       })
     },
