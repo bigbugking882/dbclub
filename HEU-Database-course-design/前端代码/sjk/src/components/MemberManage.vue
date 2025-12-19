@@ -21,7 +21,7 @@
       </div>
     </div>
     
-    <el-table :data="memberList" v-loading="loading">
+    <el-table :data="memberList" v-loading="loading" style="width: 100%">
       <el-table-column label="序号" width="60">
         <template slot-scope="scope">
           {{ scope.$index + 1 }}
@@ -45,10 +45,11 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" width="250">
+      <el-table-column label="操作" width="250" fixed="right">
         <template slot-scope="scope">
+          <!-- 只有非创始人且待审核的成员才能审核 -->
           <el-button 
-            v-if="scope.row.audit_status === 0"
+            v-if="scope.row.audit_status === 0 && !scope.row.is_founder"
             size="mini" 
             type="success"
             @click="handleAudit(scope.row, 1)"
@@ -56,21 +57,30 @@
             通过
           </el-button>
           <el-button 
-            v-if="scope.row.audit_status === 0"
+            v-if="scope.row.audit_status === 0 && !scope.row.is_founder"
             size="mini" 
             type="danger"
             @click="handleAudit(scope.row, 2)"
           >
             拒绝
           </el-button>
+          <!-- 只有非创始人且已通过的成员才能移除 -->
           <el-button 
-            v-if="scope.row.audit_status === 1"
+            v-if="scope.row.audit_status === 1 && !scope.row.is_founder && scope.row.role !== 1"
             size="mini" 
             type="danger"
             @click="removeMember(scope.row)"
           >
             移除
           </el-button>
+          <!-- 创始人/社长显示特殊标签 -->
+          <el-tag 
+            v-if="scope.row.is_founder || scope.row.role === 1"
+            type="danger" 
+            size="small"
+          >
+            社长
+          </el-tag>
         </template>
       </el-table-column>
     </el-table>
@@ -104,18 +114,29 @@ export default {
       if (this.filterStatus) params.audit_status = this.filterStatus
       
       getClubMembers(params).then(res => {
-        this.memberList = res.data
+        // 添加是否是创始人的标识
+        this.memberList = (res.data || []).map(member => ({
+          ...member,
+          is_founder: member.user_id === member.founder_id // 如果用户ID等于创始人ID
+        }))
         this.loading = false
       }).catch(() => {
         this.loading = false
+        this.memberList = []
       })
     },
     loadClubs() {
       getClubs().then(res => {
-        this.clubList = res.data
+        this.clubList = res.data || []
       })
     },
     handleAudit(member, status) {
+      // 检查是否是创始人/社长
+      if (member.is_founder || member.role === 1) {
+        this.$message.warning('创始人/社长无需审核')
+        return
+      }
+      
       const action = status === 1 ? '通过' : '拒绝'
       this.$confirm(`确定要${action}这个成员的申请吗？`, '提示', {
         type: 'warning'
@@ -127,6 +148,12 @@ export default {
       })
     },
     removeMember(member) {
+      // 检查是否是创始人/社长
+      if (member.is_founder || member.role === 1) {
+        this.$message.warning('不能移除创始人/社长')
+        return
+      }
+      
       this.$confirm('确定要移除这个成员吗？', '提示', {
         type: 'warning'
       }).then(() => {

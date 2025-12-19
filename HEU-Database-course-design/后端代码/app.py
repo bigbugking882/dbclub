@@ -413,7 +413,8 @@ def create_club():
         
         # 根据用户角色决定状态：管理员直接通过(1)，普通用户待审核(2)
         club_status = 1 if user and user[0] in [1, 2] else 2  # 1-社团管理员, 2-系统管理员
-        member_audit_status = 1 if user and user[0] in [1, 2] else 0
+        # 无论用户角色如何，创始人都是已审核通过的社长
+        member_audit_status = 1  # 改为1，总是已审核通过
         
         # 创建社团
         insert_sql = text('''
@@ -431,7 +432,7 @@ def create_club():
         # 获取新创建的社团ID
         club_id = db.session.execute(text('SELECT LAST_INSERT_ID()')).scalar()
         
-        # 创始人自动成为社长
+        # 创始人自动成为社长且已审核通过
         member_sql = text('''
             INSERT INTO club_member (user_id, club_id, role, join_time, audit_status) 
             VALUES (:user_id, :club_id, 1, CURDATE(), :audit_status)
@@ -439,7 +440,7 @@ def create_club():
         db.session.execute(member_sql, {
             'user_id': founder_id,
             'club_id': club_id,
-            'audit_status': member_audit_status
+            'audit_status': member_audit_status  # 这里固定为1（已通过）
         })
         
         db.session.commit()
@@ -860,7 +861,12 @@ def get_club_members():
         audit_status = request.args.get('audit_status')
         
         sql = '''
-            SELECT cm.*, u.username, u.telephone, c.club_name
+            SELECT 
+                cm.*, 
+                u.username, 
+                u.telephone, 
+                c.club_name,
+                c.founder_id  # 新增：获取社团创始人ID
             FROM club_member cm
             LEFT JOIN user u ON cm.user_id = u.id
             LEFT JOIN club c ON cm.club_id = c.club_id
@@ -876,21 +882,23 @@ def get_club_members():
             sql += ' AND cm.audit_status = :audit_status'
             params['audit_status'] = audit_status
             
-        sql += ' ORDER BY cm.club_id ASC, cm.role DESC, cm.join_time ASC'  # 先按社团ID排序，再按加入时间排序
+        sql += ' ORDER BY cm.club_id ASC, cm.role DESC, cm.join_time ASC'
         
         result = db.session.execute(text(sql), params)
         members = []
         for row in result:
             members.append({
-                'member_id': row[0],      # 成员关系ID（保留但不显示）
-                'user_id': row[1],        # 用户ID - 这个作为显示的ID
-                'club_id': row[2],        # 社团ID
-                'role': row[3],           # 角色
-                'join_time': str(row[4]), # 加入时间
-                'audit_status': row[5],   # 审核状态
-                'username': row[6],       # 用户名
-                'telephone': row[7],      # 手机号
-                'club_name': row[8]       # 社团名称
+                'member_id': row[0],
+                'user_id': row[1],
+                'club_id': row[2],
+                'role': row[3],           # 角色：1=社长
+                'join_time': str(row[4]),
+                'audit_status': row[5],
+                'username': row[6],
+                'telephone': row[7],
+                'club_name': row[8],
+                'founder_id': row[9],     # 新增：社团创始人ID
+                'is_founder': row[1] == row[9]  # 新增：是否是创始人
             })
         
         return jsonify({
