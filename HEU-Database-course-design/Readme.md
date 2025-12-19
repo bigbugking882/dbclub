@@ -81,6 +81,7 @@ npm run serve
 ### 启动Redis
 
 启动方法见博客：https://blog.csdn.net/chen15369337607/article/details/119334531
+redis-server
 
 ### 启动后端！
 

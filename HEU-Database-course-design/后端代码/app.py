@@ -530,22 +530,39 @@ def get_activities():
     try:
         club_id = request.args.get('club_id')
         status = request.args.get('status')
+        user_id = request.args.get('user_id')  # 添加用户ID参数
         
         sql = '''
-            SELECT a.*, c.club_name 
+            SELECT 
+                a.*, 
+                COALESCE(c.club_name, '未知社团') as club_name,
+                CASE WHEN asu.signup_id IS NOT NULL THEN 1 ELSE 0 END as is_signed
             FROM activity a 
             LEFT JOIN club c ON a.club_id = c.club_id 
+            LEFT JOIN activity_signup asu ON a.activity_id = asu.activity_id AND asu.user_id = :user_id
+            WHERE 1=1
         '''
-        params = {}
+        params = {'user_id': user_id} if user_id else {}
         
         if club_id:
             sql += ' AND a.club_id = :club_id'
             params['club_id'] = club_id
             
         if status:
-            sql += ' AND a.status = :status'
-            params['status'] = status
-            
+            # 支持多个状态筛选，如 "0,1,2"
+            if ',' in status:
+                status_list = status.split(',')
+                placeholders = ','.join([f':status{i}' for i in range(len(status_list))])
+                sql += f' AND a.status IN ({placeholders})'
+                for i, s in enumerate(status_list):
+                    params[f'status{i}'] = int(s) if s.isdigit() else s
+            else:
+                sql += ' AND a.status = :status'
+                params['status'] = int(status) if status.isdigit() else status
+        
+        # 普通用户默认只显示已审核的活动（状态0,1,2）
+        # 这个逻辑最好放在前端处理，或者在这里根据用户角色判断
+        
         sql += ' ORDER BY a.activity_id ASC'
         
         result = db.session.execute(text(sql), params)
@@ -561,7 +578,8 @@ def get_activities():
                 'location': row[6],
                 'status': row[7],
                 'create_time': str(row[8]),
-                'club_name': row[9]
+                'club_name': row[9],
+                'is_signed': row[10] if len(row) > 10 else 0
             })
         
         return jsonify({
@@ -574,10 +592,10 @@ def get_activities():
         print("获取活动错误:", str(e))
         return jsonify({
             'status': 500,
-            'message': '获取失败',
+            'message': f'获取失败: {str(e)}',
             'data': None
         })
-
+    
 # 创建活动 - 根据用户角色决定审核状态
 @app.route('/api/activity/create', methods=['POST'])
 def create_activity():
