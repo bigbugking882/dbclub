@@ -45,8 +45,8 @@ service.interceptors.response.use(
         case 401:
           Message.error('未授权，请重新登录')
           // 清除token并跳转到登录页
-          localStorage.removeItem('user')
-          localStorage.removeItem('token')
+          sessionStorage.removeItem('user')
+          sessionStorage.removeItem('token')
           window.location.href = '/login'
           break
         case 403:

@@ -84,7 +84,7 @@ export default {
         club_name: [{ required: true, message: '请输入社团名称', trigger: 'blur' }],
         category: [{ required: true, message: '请选择社团类别', trigger: 'change' }]
       },
-      user: JSON.parse(localStorage.getItem('user') || '{}')
+      user: JSON.parse(sessionStorage.getItem('user') || '{}')
     }
   },
   mounted() {

@@ -1,26 +1,26 @@
 export function getToken() {
-  return localStorage.getItem('token')
+  return sessionStorage.getItem('token')
 }
 
 export function setToken(token) {
-  localStorage.setItem('token', token)
+  sessionStorage.setItem('token', token)
 }
 
 export function removeToken() {
-  localStorage.removeItem('token')
+  sessionStorage.removeItem('token')
 }
 
 export function getUserInfo() {
-  const user = localStorage.getItem('user')
+  const user = sessionStorage.getItem('user')
   return user ? JSON.parse(user) : null
 }
 
 export function setUserInfo(user) {
-  localStorage.setItem('user', JSON.stringify(user))
+  sessionStorage.setItem('user', JSON.stringify(user))
 }
 
 export function removeUserInfo() {
-  localStorage.removeItem('user')
+  sessionStorage.removeItem('user')
 }
 
 export function isAdmin() {

@@ -293,7 +293,7 @@ export default {
       membersLoading: false,
       activitiesLoading: false,
       saving: false,
-      user: JSON.parse(localStorage.getItem('user') || '{}'),
+      user: JSON.parse(sessionStorage.getItem('user') || '{}'),
       // 活动相关配置
       showActivityDialog: false,
       isEditActivity: false,

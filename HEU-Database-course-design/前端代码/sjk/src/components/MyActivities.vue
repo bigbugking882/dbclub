@@ -43,7 +43,7 @@ export default {
     return {
       activeTab: 'signed',
       allActivities: [],
-      user: JSON.parse(localStorage.getItem('user') || '{}')
+      user: JSON.parse(sessionStorage.getItem('user') || '{}')
     }
   },
   computed: {

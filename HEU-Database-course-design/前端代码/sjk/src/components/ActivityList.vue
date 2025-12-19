@@ -269,7 +269,7 @@ export default {
         start_time: [{ required: true, validator: validateStartTime, trigger: 'change' }],
         end_time: [{ required: true, validator: validateEndTime, trigger: 'change' }]
       },
-      user: JSON.parse(localStorage.getItem('user') || '{}'),
+      user: JSON.parse(sessionStorage.getItem('user') || '{}'),
       // 添加已报名活动的ID集合
       signedActivityIds: new Set()
     }

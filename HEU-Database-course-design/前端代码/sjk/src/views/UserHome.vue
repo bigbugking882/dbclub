@@ -82,7 +82,7 @@ export default {
     return {
       activeTab: 'clubs',
       showCreateClub: false,
-      user: JSON.parse(localStorage.getItem('user') || '{}'),
+      user: JSON.parse(sessionStorage.getItem('user') || '{}'),
       clubForm: {
         club_name: '',
         category: '',
@@ -99,7 +99,7 @@ export default {
       this.$confirm('确定要退出登录吗？', '提示', {
         type: 'warning'
       }).then(() => {
-        localStorage.removeItem('user')
+        sessionStorage.removeItem('user')
         this.$router.push('/login')
       })
     },

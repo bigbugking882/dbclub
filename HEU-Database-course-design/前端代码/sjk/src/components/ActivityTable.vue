@@ -210,7 +210,7 @@ export default {
         this.loading = true
         cancelActivitySignup({
           activity_id: activity.activity_id,
-          user_id: JSON.parse(localStorage.getItem('user') || '{}').id
+          user_id: JSON.parse(sessionStorage.getItem('user') || '{}').id
         }).then(() => {
           this.loading = false
           this.$message.success('取消报名成功')

@@ -60,12 +60,12 @@ export default {
   data() {
     return {
       activeMenu: 'clubs',
-      user: JSON.parse(localStorage.getItem('user') || '{}')
+      user: JSON.parse(sessionStorage.getItem('user') || '{}')
     }
   },
   methods: {
     handleLogout() {
-      localStorage.removeItem('user')
+      sessionStorage.removeItem('user')
       this.$router.push('/login')
     },
     handleMenuSelect(index) {

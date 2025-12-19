@@ -70,7 +70,7 @@ export default {
           userLogin(this.loginForm).then(res => {
             this.loading = false
             const user = res.data
-            localStorage.setItem('user', JSON.stringify(user))
+            sessionStorage.setItem('user', JSON.stringify(user))
             
             if (user.role === 2) {
               this.$router.push('/admin')
