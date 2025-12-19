@@ -295,7 +295,7 @@ export default {
 .club-desc {
   flex: 1;
   color: #666;
-  font-size: 14px;
+  font-size: 16px;
   line-height: 1.4;
   overflow: hidden;
   display: -webkit-box;
@@ -304,7 +304,7 @@ export default {
 }
 .club-info {
   margin-top: 10px;
-  font-size: 14px;
+  font-size: 15px;
   color: #999;
   display: flex;
   flex-direction: column;
