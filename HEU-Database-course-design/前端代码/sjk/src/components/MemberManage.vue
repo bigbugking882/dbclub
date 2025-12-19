@@ -22,7 +22,11 @@
     </div>
     
     <el-table :data="memberList" v-loading="loading">
-      <el-table-column prop="member_id" label="ID" width="80"></el-table-column>
+      <el-table-column label="序号" width="80">
+        <template slot-scope="scope">
+          {{ scope.$index + 1 }}
+        </template>
+      </el-table-column>
       <el-table-column prop="username" label="用户名"></el-table-column>
       <el-table-column prop="telephone" label="手机号"></el-table-column>
       <el-table-column prop="club_name" label="社团"></el-table-column>

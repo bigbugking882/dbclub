@@ -5,7 +5,11 @@
     </div>
     
     <el-table :data="clubList" v-loading="loading">
-      <el-table-column prop="club_id" label="ID" width="80"></el-table-column>
+      <el-table-column label="序号" width="80">
+        <template slot-scope="scope">
+          {{ scope.$index + 1 }}
+        </template>
+      </el-table-column>
       <el-table-column prop="club_name" label="社团名称"></el-table-column>
       <el-table-column prop="category" label="类别"></el-table-column>
       <el-table-column prop="founder_name" label="创始人"></el-table-column>

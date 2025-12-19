@@ -5,7 +5,11 @@
     </div>
     
     <el-table :data="userList" v-loading="loading">
-      <el-table-column prop="id" label="ID" width="80"></el-table-column>
+      <el-table-column label="序号" width="80">
+        <template slot-scope="scope">
+          {{ scope.$index + 1 }}
+        </template>
+      </el-table-column>
       <el-table-column prop="username" label="用户名"></el-table-column>
       <el-table-column prop="telephone" label="手机号"></el-table-column>
       <el-table-column prop="role" label="角色">

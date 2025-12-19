@@ -582,9 +582,8 @@ def get_activities():
             else:
                 sql += ' AND a.status = :status'
                 params['status'] = int(status) if status.isdigit() else status
-        
-        sql += ' ORDER BY a.activity_id ASC'
-        
+
+        sql += ' ORDER BY a.club_id ASC, a.start_time ASC, a.activity_id ASC'
         print(f"执行SQL: {sql}")
         print(f"参数: {params}")
         
@@ -877,7 +876,7 @@ def get_club_members():
             sql += ' AND cm.audit_status = :audit_status'
             params['audit_status'] = audit_status
             
-        sql += ' ORDER BY cm.club_id ASC, cm.user_id ASC'  # 先按社团ID排序，再按用户ID排序
+        sql += ' ORDER BY cm.club_id ASC, cm.role DESC, cm.user_id ASC'  # 先按社团ID排序，再按用户ID排序
         
         result = db.session.execute(text(sql), params)
         members = []
