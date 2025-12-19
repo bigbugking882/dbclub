@@ -120,7 +120,7 @@
         <el-button 
           type="primary" 
           @click="handleJoinClub(currentClub)"
-          :disabled="!currentClub || currentClub.audit_status !== 1"
+          :disabled="!currentClub || !( (currentClub.audit_status === 1) || (currentClub.status === 1) )"
         >
           加入社团
         </el-button>
@@ -202,16 +202,24 @@ export default {
       })
     },
     handleJoinClub(club) {
-      this.$confirm(`确定要加入 ${club.club_name} 吗？`, '提示', {
+      if (!club) return
+      const clubName = club.club_name || club.name || ''
+      const clubId = club.club_id || club.id || club.clubId
+      this.$confirm(`确定要加入 ${clubName} 吗？`, '提示', {
         type: 'info'
       }).then(() => {
-        // 使用 joinClub 函数
+        // 使用 joinClub 函数，兼容不同 id 字段名
         joinClub({
-          club_id: club.club_id,
+          club_id: clubId,
           user_id: this.user.id
         }).then(() => {
           this.$message.success('申请已提交，等待审核')
+        }).catch(err => {
+          console.error('加入社团失败:', err)
+          this.$message.error('加入社团失败')
         })
+      }).catch(() => {
+        // 用户取消操作，无需提示
       })
     },
     viewClubDetail(club) {
@@ -223,12 +231,19 @@ export default {
       // 重置数据
       this.clubStats = {}
       this.activityStats = {}
-      
+
       // 使用新增的API函数获取社团详情
       getClubDetail(clubId).then(res => {
         if (res.status === 200 && res.data) {
           const data = res.data
-          this.currentClub = data.club_info
+          const info = data.club_info || {}
+          // 保留从列表中已有字段，避免请求返回字段命名不一致导致短暂丢失
+          const merged = Object.assign({}, this.currentClub || {}, info)
+          // 兼容可能的字段名：founder_name / founderName / founder
+          if (!merged.founder_name) {
+            merged.founder_name = info.founder_name || info.founderName || (info.founder && (info.founder.name || info.founder.username)) || (this.currentClub && this.currentClub.founder_name) || ''
+          }
+          this.currentClub = merged
           this.clubStats = data.stats || {}
           this.activityStats = data.activity_stats || {}
         }
@@ -301,8 +316,8 @@ export default {
 
 /* 社团详情样式 */
 .club-detail {
-  max-height: 500px;
-  overflow-y: auto;
+  max-height: 360px; /* 调低对话框内详情高度 */
+  overflow: visible; /* 去掉滚动条，允许内容超出 */
   padding-right: 10px;
 }
 
@@ -326,7 +341,7 @@ export default {
   padding: 15px;
   background-color: #f8f9fa;
   border-radius: 8px;
-  height: 80px;
+  height: 40px;
 }
 .stat-icon {
   width: 40px;
@@ -359,19 +374,13 @@ export default {
   font-size: 14px;
   color: #606266;
 }
-
-/* 滚动条样式 */
-.club-detail::-webkit-scrollbar {
-  width: 6px;
+</style>
+<!-- 以下规则使用深度选择器，确保在 Dialog 被插入到 body 时样式仍能生效 -->
+<style scoped>
+::v-deep .el-dialog__body .club-detail {
+  padding-bottom: 60px !important; /* 确保有足够空间与 footer 分隔 */
 }
-.club-detail::-webkit-scrollbar-track {
-  background: #f1f1f1;
-}
-.club-detail::-webkit-scrollbar-thumb {
-  background: #c1c1c1;
-  border-radius: 3px;
-}
-.club-detail::-webkit-scrollbar-thumb:hover {
-  background: #a8a8a8;
+::v-deep .el-dialog__body .stats-section {
+  margin-bottom: 28px !important;
 }
 </style>
