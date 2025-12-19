@@ -23,6 +23,14 @@ export function updateClub(data) {
   })
 }
 
+// 获取社团详情
+export function getClubDetail(clubId) {
+  return request({
+    url: `/api/club/${clubId}`,
+    method: 'get'
+  })
+}
+
 // 获取社团成员列表
 export function getClubMembers(params) {
   return request({

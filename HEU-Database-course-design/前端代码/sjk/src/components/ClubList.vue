@@ -58,6 +58,74 @@
         <el-button type="primary" @click="handleCreateClub">创建</el-button>
       </div>
     </el-dialog>
+
+    <!-- 社团详情对话框 -->
+    <el-dialog 
+      :title="currentClub ? currentClub.club_name + ' - 详情' : '社团详情'" 
+      :visible.sync="showDetailDialog" 
+      width="500px"
+    >
+      <div v-if="currentClub" class="club-detail">
+        <el-descriptions :column="1" border>
+          <el-descriptions-item label="社团名称">{{ currentClub.club_name }}</el-descriptions-item>
+          <el-descriptions-item label="社团类别">
+            <el-tag :type="getCategoryType(currentClub.category)">
+              {{ currentClub.category }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="创始人">{{ currentClub.founder_name }}</el-descriptions-item>
+          <el-descriptions-item label="创建时间">{{ formatDate(currentClub.create_time) }}</el-descriptions-item>
+          <el-descriptions-item label="社团状态">
+            <el-tag :type="currentClub.status === 1 ? 'success' : 'danger'">
+              {{ currentClub.status === 1 ? '正常运行' : '已停用' }}
+            </el-tag>
+          </el-descriptions-item>
+          <el-descriptions-item label="社团简介">
+            <div class="description-content">
+              {{ currentClub.description || '暂无简介' }}
+            </div>
+          </el-descriptions-item>
+        </el-descriptions>
+
+        <!-- 统计信息 -->
+        <div class="stats-section">
+          <el-row :gutter="20">
+            <el-col :span="12">
+              <div class="stat-card">
+                <div class="stat-icon member-icon">
+                  <i class="el-icon-user"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-number">{{ clubStats.total_members || 0 }}</div>
+                  <div class="stat-label">总成员数</div>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="12">
+              <div class="stat-card">
+                <div class="stat-icon activity-icon">
+                  <i class="el-icon-date"></i>
+                </div>
+                <div class="stat-info">
+                  <div class="stat-number">{{ activityStats.total_activities || 0 }}</div>
+                  <div class="stat-label">总活动数</div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+      <div slot="footer">
+        <el-button @click="showDetailDialog = false">关闭</el-button>
+        <el-button 
+          type="primary" 
+          @click="handleJoinClub(currentClub)"
+          :disabled="!currentClub || currentClub.audit_status !== 1"
+        >
+          加入社团
+        </el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -67,6 +135,9 @@ import { getClubs, createClub } from '@/api/club'
 import { joinClub } from '@/api/member'
 import { formatDate } from '@/utils/date'
 
+// 导入新增的API函数
+import { getClubDetail } from '@/api/club'
+
 export default {
   name: 'ClubList',
   data() {
@@ -74,6 +145,7 @@ export default {
       clubList: [],
       loading: false,
       showCreateDialog: false,
+      showDetailDialog: false,
       filterCategory: '',
       clubForm: {
         club_name: '',
@@ -84,7 +156,12 @@ export default {
         club_name: [{ required: true, message: '请输入社团名称', trigger: 'blur' }],
         category: [{ required: true, message: '请选择社团类别', trigger: 'change' }]
       },
-      user: JSON.parse(sessionStorage.getItem('user') || '{}')
+      user: JSON.parse(sessionStorage.getItem('user') || '{}'),
+      
+      // 社团详情相关数据
+      currentClub: null,
+      clubStats: {},
+      activityStats: {}
     }
   },
   mounted() {
@@ -138,7 +215,27 @@ export default {
       })
     },
     viewClubDetail(club) {
-      this.$message.info(`查看 ${club.club_name} 的详情`)
+      this.currentClub = club
+      this.showDetailDialog = true
+      this.loadClubDetail(club.club_id)
+    },
+    loadClubDetail(clubId) {
+      // 重置数据
+      this.clubStats = {}
+      this.activityStats = {}
+      
+      // 使用新增的API函数获取社团详情
+      getClubDetail(clubId).then(res => {
+        if (res.status === 200 && res.data) {
+          const data = res.data
+          this.currentClub = data.club_info
+          this.clubStats = data.stats || {}
+          this.activityStats = data.activity_stats || {}
+        }
+      }).catch(error => {
+        console.error('加载社团详情失败:', error)
+        this.$message.error('加载社团详情失败')
+      })
     },
     getCategoryType(category) {
       const types = {
@@ -200,5 +297,81 @@ export default {
 .club-actions {
   margin-top: 10px;
   text-align: right;
+}
+
+/* 社团详情样式 */
+.club-detail {
+  max-height: 500px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+/* 描述内容样式 */
+.description-content {
+  padding: 10px;
+  background-color: #f8f9fa;
+  border-radius: 4px;
+  white-space: pre-wrap;
+  line-height: 1.5;
+  min-height: 60px;
+}
+
+/* 统计信息样式 */
+.stats-section {
+  margin: 20px 0;
+}
+.stat-card {
+  display: flex;
+  align-items: center;
+  padding: 15px;
+  background-color: #f8f9fa;
+  border-radius: 8px;
+  height: 80px;
+}
+.stat-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-right: 15px;
+  font-size: 20px;
+  color: white;
+}
+.member-icon {
+  background-color: #409EFF;
+}
+.activity-icon {
+  background-color: #67C23A;
+}
+.stat-info {
+  flex: 1;
+}
+.stat-number {
+  font-size: 24px;
+  font-weight: bold;
+  color: #303133;
+  line-height: 1;
+}
+.stat-label {
+  margin-top: 5px;
+  font-size: 14px;
+  color: #606266;
+}
+
+/* 滚动条样式 */
+.club-detail::-webkit-scrollbar {
+  width: 6px;
+}
+.club-detail::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+.club-detail::-webkit-scrollbar-thumb {
+  background: #c1c1c1;
+  border-radius: 3px;
+}
+.club-detail::-webkit-scrollbar-thumb:hover {
+  background: #a8a8a8;
 }
 </style>

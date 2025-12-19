@@ -1260,6 +1260,131 @@ def delete_club(club_id):
             'message': '删除失败',
             'data': None
         })
-
+    
+# 获取社团详情
+@app.route('/api/club/<int:club_id>', methods=['GET'])
+def get_club_detail(club_id):
+    try:
+        # 1. 获取社团基本信息
+        club_sql = text('''
+            SELECT c.*, u.username as founder_name 
+            FROM club c 
+            LEFT JOIN user u ON c.founder_id = u.id 
+            WHERE c.club_id = :club_id
+        ''')
+        club_result = db.session.execute(club_sql, {'club_id': club_id})
+        club_data = club_result.fetchone()
+        
+        if not club_data:
+            return jsonify({
+                'status': 404,
+                'message': '社团不存在',
+                'data': None
+            })
+        
+        club_info = {
+            'club_id': club_data[0],
+            'club_name': club_data[1],
+            'description': club_data[2],
+            'founder_id': club_data[3],
+            'create_time': str(club_data[4]),
+            'status': club_data[5],
+            'category': club_data[6],
+            'audit_status': club_data[7] if len(club_data) > 7 else 0,
+            'founder_name': club_data[8] if len(club_data) > 8 else None
+        }
+        
+        # 2. 获取成员统计
+        stats_sql = text('''
+            SELECT 
+                COUNT(*) as total_members
+            FROM club_member 
+            WHERE club_id = :club_id AND audit_status = 1
+        ''')
+        stats_result = db.session.execute(stats_sql, {'club_id': club_id})
+        stats_data = stats_result.fetchone()
+        
+        stats = {
+            'total_members': stats_data[0] if stats_data else 0
+        }
+        
+        # 3. 获取活动统计
+        activity_stats_sql = text('''
+            SELECT 
+                COUNT(*) as total_activities
+            FROM activity 
+            WHERE club_id = :club_id AND status IN (0, 1, 2)
+        ''')
+        activity_stats_result = db.session.execute(activity_stats_sql, {'club_id': club_id})
+        activity_stats_data = activity_stats_result.fetchone()
+        
+        activity_stats = {
+            'total_activities': activity_stats_data[0] if activity_stats_data else 0
+        }
+        
+        return jsonify({
+            'status': 200,
+            'message': '获取成功',
+            'data': {
+                'club_info': club_info,
+                'stats': stats,
+                'activity_stats': activity_stats
+            }
+        })
+        
+    except Exception as e:
+        print("获取社团详情错误:", str(e))
+        return jsonify({
+            'status': 500,
+            'message': f'获取失败: {str(e)}',
+            'data': None
+        })
+    
+# 获取社团活动列表
+@app.route('/api/club/activities', methods=['GET'])
+def get_club_activities():
+    try:
+        club_id = request.args.get('club_id')
+        if not club_id:
+            return jsonify({
+                'status': 400,
+                'message': '社团ID不能为空',
+                'data': None
+            })
+            
+        sql = text('''
+            SELECT * FROM activity 
+            WHERE club_id = :club_id 
+            ORDER BY start_time DESC
+        ''')
+        result = db.session.execute(sql, {'club_id': club_id})
+        activities = []
+        for row in result:
+            activities.append({
+                'activity_id': row[0],
+                'title': row[1],
+                'description': row[2],
+                'location': row[3],
+                'start_time': str(row[4]),
+                'end_time': str(row[5]),
+                'club_id': row[6],
+                'creator_id': row[7],
+                'status': row[8]
+            })
+            
+        return jsonify({
+            'status': 200,
+            'message': '获取成功',
+            'data': activities
+        })
+    except Exception as e:
+        print("获取社团活动错误:", str(e))
+        return jsonify({
+            'status': 500,
+            'message': '获取失败',
+            'data': None
+        })
+    
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
+
