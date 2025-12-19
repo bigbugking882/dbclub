@@ -1160,23 +1160,56 @@ def health_check():
 @app.route('/api/user/<int:user_id>/activities', methods=['GET'])
 def get_my_activities(user_id):
     try:
+        print(f"=== 开始查询用户 {user_id} 的活动 ===")
+        
         sql = text('''
             SELECT 
-                a.*, 
-                c.club_name,
-                CASE WHEN asu.signup_id IS NOT NULL THEN 1 ELSE 0 END as is_signed,
-                u.id as creator_id
-            FROM activity a
+                a.activity_id,
+                a.club_id,
+                a.title,
+                a.content,
+                a.start_time,
+                a.end_time,
+                a.location,
+                a.status,
+                a.create_time,
+                a.creator_id,
+                COALESCE(c.club_name, '未知社团') as club_name,
+                is_signed
+            FROM (
+                -- 用户报名的活动
+                SELECT 
+                    a.*,
+                    1 as is_signed
+                FROM activity a
+                INNER JOIN activity_signup asu ON a.activity_id = asu.activity_id
+                WHERE asu.user_id = :user_id
+                
+                UNION
+                
+                -- 用户创建的活动（检查是否也报名了）
+                SELECT 
+                    a.*,
+                    CASE 
+                        WHEN EXISTS (
+                            SELECT 1 FROM activity_signup asu2 
+                            WHERE asu2.activity_id = a.activity_id AND asu2.user_id = :user_id
+                        ) THEN 1 
+                        ELSE 0 
+                    END as is_signed
+                FROM activity a
+                WHERE a.creator_id = :user_id
+            ) a
             LEFT JOIN club c ON a.club_id = c.club_id
-            LEFT JOIN activity_signup asu ON a.activity_id = asu.activity_id AND asu.user_id = :user_id
-            LEFT JOIN user u ON c.founder_id = u.id
-            WHERE asu.user_id = :user_id OR c.founder_id = :user_id
-            ORDER BY a.activity_id ASC
+            ORDER BY a.start_time ASC
         ''')
+        
+        print(f"执行SQL查询: {sql}")
         result = db.session.execute(sql, {'user_id': user_id})
+        
         activities = []
         for row in result:
-            activities.append({
+            activity_data = {
                 'activity_id': row[0],
                 'club_id': row[1],
                 'title': row[2],
@@ -1186,11 +1219,15 @@ def get_my_activities(user_id):
                 'location': row[6],
                 'status': row[7],
                 'create_time': str(row[8]),
-                'club_name': row[9],
-                'is_signed': row[10],
-                'creator_id': row[11]
-            })
+                'creator_id': row[9],
+                'club_name': row[10],
+                'is_signed': int(row[11]) if row[11] is not None else 0
+            }
+            
+            print(f"活动: {activity_data['title']}, 创建者: {activity_data['creator_id']}, 是否我创建: {activity_data['creator_id'] == user_id}, 报名状态: {activity_data['is_signed']}")
+            activities.append(activity_data)
         
+        print(f"=== 查询结束，找到 {len(activities)} 个活动 ===")
         return jsonify({
             'status': 200,
             'message': '获取成功',
@@ -1199,12 +1236,13 @@ def get_my_activities(user_id):
         
     except Exception as e:
         print("获取我的活动错误:", str(e))
+        import traceback
+        traceback.print_exc()
         return jsonify({
             'status': 500,
-            'message': '获取失败',
+            'message': f'获取失败: {str(e)}',
             'data': None
         })
-
 # 取消活动报名
 @app.route('/api/activity/cancel-signup', methods=['POST'])
 def cancel_activity_signup():
