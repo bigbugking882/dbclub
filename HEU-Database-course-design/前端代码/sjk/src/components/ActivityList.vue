@@ -50,7 +50,7 @@
           {{ formatDate(scope.row.end_time) }}
         </template>
       </el-table-column>
-      <el-table-column prop="status" label="状态">
+      <el-table-column prop="status" label="状态" width="80">
         <template slot-scope="scope">
           <el-tag :type="getStatusType(scope.row.status)">
             {{ getStatusText(scope.row.status) }}
@@ -465,12 +465,10 @@ export default {
     shouldDisableSignup(activity) {
       // 1. 活动不是未开始状态
       // 2. 用户已经报名了这个活动（通过 is_signed 或 signedActivityIds 判断）
-      // 3. 用户是这个活动的创建者
-      // 4. 活动是待审核状态（普通用户不应该看到，但防止万一）
+      // 3. 活动是待审核状态（普通用户不应该看到，但防止万一）
       return activity.status !== 0 || 
              activity.is_signed === 1 || 
              this.signedActivityIds.has(activity.activity_id) ||
-             activity.creator_id === this.user.id ||
              [3, 4].includes(activity.status)
     },
     // 获取报名按钮文本
@@ -526,7 +524,7 @@ export default {
 
 /* 统一按钮样式 */
 .activity-list >>> .action-button {
-  min-width: 60px;
+  min-width: 75px;
   height: 28px;
   line-height: 28px;
   padding: 0 12px;
@@ -535,7 +533,7 @@ export default {
 
 /* 确保报名和详情按钮大小一致 */
 .activity-list >>> .el-button--mini {
-  min-width: 60px;
+  min-width: 75px;
   height: 28px;
   line-height: 28px;
   padding: 0 12px;

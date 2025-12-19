@@ -209,7 +209,16 @@ def update_user():
 def get_clubs():
     try:
         sql = text('''
-            SELECT c.*, u.username as founder_name 
+            SELECT 
+                c.club_id,
+                c.club_name,
+                c.description,
+                c.founder_id,
+                c.create_time,
+                c.status,
+                c.category,
+                c.audit_status,
+                u.username as founder_name  -- 确保获取创始人的用户名
             FROM club c 
             LEFT JOIN user u ON c.founder_id = u.id 
             ORDER BY c.club_id ASC
@@ -217,7 +226,7 @@ def get_clubs():
         result = db.session.execute(sql)
         clubs = []
         for row in result:
-            clubs.append({
+            club = {
                 'club_id': row[0],
                 'club_name': row[1],
                 'description': row[2],
@@ -225,8 +234,10 @@ def get_clubs():
                 'create_time': str(row[4]),
                 'status': row[5],
                 'category': row[6],
-                'founder_name': row[7]
-            })
+                'audit_status': row[7],
+                'founder_name': row[8] if row[8] else '用户' + str(row[3])  # 添加默认值
+            }
+            clubs.append(club)
         
         return jsonify({
             'status': 200,
@@ -531,13 +542,14 @@ def get_activities():
     try:
         club_id = request.args.get('club_id')
         status = request.args.get('status')
-        user_id = request.args.get('user_id')  # 添加用户ID参数
+        user_id = request.args.get('user_id')
         
         # 构建SQL查询
         sql = '''
             SELECT 
                 a.*, 
-                COALESCE(c.club_name, '未知社团') as club_name
+                c.club_name,
+                u.username as club_creator_name  -- 添加社团创始人信息
         '''
         
         # 如果提供了user_id，添加报名状态查询
@@ -553,6 +565,7 @@ def get_activities():
         sql += '''
             FROM activity a 
             LEFT JOIN club c ON a.club_id = c.club_id 
+            LEFT JOIN user u ON c.founder_id = u.id  -- 添加社团创始人信息
         '''
         
         # 如果提供了user_id，添加报名表连接
@@ -573,7 +586,6 @@ def get_activities():
             params['club_id'] = club_id
             
         if status:
-            # 支持多个状态筛选，如 "0,1,2"
             if ',' in status:
                 status_list = status.split(',')
                 placeholders = ','.join([f':status{i}' for i in range(len(status_list))])
@@ -585,8 +597,6 @@ def get_activities():
                 params['status'] = int(status) if status.isdigit() else status
 
         sql += ' ORDER BY a.club_id ASC, a.start_time ASC, a.activity_id ASC'
-        print(f"执行SQL: {sql}")
-        print(f"参数: {params}")
         
         result = db.session.execute(text(sql), params)
         activities = []
@@ -601,8 +611,10 @@ def get_activities():
                 'location': row[6],
                 'status': row[7],
                 'create_time': str(row[8]),
-                'club_name': row[9],
-                'is_signed': row[10] if len(row) > 10 else 0
+                'creator_id': row[9],
+                'club_name': row[10],
+                'club_creator_name': row[11] if len(row) > 11 else '未知创始人',  # 新增字段
+                'is_signed': row[12] if len(row) > 12 else 0
             }
             activities.append(activity_data)
         
@@ -614,14 +626,12 @@ def get_activities():
         
     except Exception as e:
         print("获取活动错误:", str(e))
-        import traceback
-        traceback.print_exc()  # 打印完整的错误堆栈
         return jsonify({
             'status': 500,
             'message': f'获取失败: {str(e)}',
             'data': None
         })
-        
+       
 # 创建活动 - 根据用户角色决定审核状态
 @app.route('/api/activity/create', methods=['POST'])
 def create_activity():
