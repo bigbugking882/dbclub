@@ -1,6 +1,11 @@
 <template>
   <div class="activity-table">
     <el-table :data="activities" v-loading="loading">
+      <el-table-column label="序号" width="80">
+        <template slot-scope="scope">
+          {{ scope.$index + 1 }}
+        </template>
+      </el-table-column>
       <el-table-column prop="title" label="活动名称"></el-table-column>
       <el-table-column prop="club_name" label="主办社团"></el-table-column>
       <el-table-column prop="location" label="活动地点"></el-table-column>
