@@ -1,0 +1,326 @@
+<mxfile>
+  <diagram name="校园社团管理系统数据流图">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- ========== 外部实体 ========== -->
+        <!-- 学生用户 -->
+        <mxCell id="student" value="学生用户" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;" vertex="1" parent="1">
+          <mxGeometry x="50" y="200" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 社团负责人 -->
+        <mxCell id="leader" value="社团负责人" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;" vertex="1" parent="1">
+          <mxGeometry x="50" y="400" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 系统管理员 -->
+        <mxCell id="admin" value="系统管理员" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;" vertex="1" parent="1">
+          <mxGeometry x="50" y="600" width="100" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 数据处理过程 P ========== -->
+        <!-- P1.1：用户认证管理 -->
+        <mxCell id="P1_1" value="P1.1&#10;用户认证管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="200" y="100" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- P1.2：社团信息管理 -->
+        <mxCell id="P1_2" value="P1.2&#10;社团信息管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="200" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- P1.3：成员关系管理 -->
+        <mxCell id="P1_3" value="P1.3&#10;成员关系管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="200" y="400" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- P2.1：活动信息管理 -->
+        <mxCell id="P2_1" value="P2.1&#10;活动信息管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="200" y="550" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- P2.2：报名信息管理 -->
+        <mxCell id="P2_2" value="P2.2&#10;报名信息管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="1">
+          <mxGeometry x="200" y="700" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 数据存储 D ========== -->
+        <!-- D1：用户信息表 -->
+        <mxCell id="D1" value="D1&#10;用户信息表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" vertex="1" parent="1">
+          <mxGeometry x="400" y="100" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- D2：社团信息表 -->
+        <mxCell id="D2" value="D2&#10;社团信息表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" vertex="1" parent="1">
+          <mxGeometry x="400" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- D3：活动信息表 -->
+        <mxCell id="D3" value="D3&#10;活动信息表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" vertex="1" parent="1">
+          <mxGeometry x="400" y="400" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- D4：报名信息表 -->
+        <mxCell id="D4" value="D4&#10;报名信息表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" vertex="1" parent="1">
+          <mxGeometry x="400" y="550" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- D5：成员信息表 -->
+        <mxCell id="D5" value="D5&#10;成员信息表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" vertex="1" parent="1">
+          <mxGeometry x="400" y="700" width="120" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 数据流 - 学生用户相关 ========== -->
+        <!-- 学生注册 -->
+        <mxCell id="flow1" value="注册信息" style="endArrow=classic;html=1;strokeColor=#1565C0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="230" as="sourcePoint" />
+            <mxPoint x="200" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 学生登录 -->
+        <mxCell id="flow2" value="登录凭证" style="endArrow=classic;html=1;strokeColor=#1565C0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="240" as="sourcePoint" />
+            <mxPoint x="200" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 学生申请加入社团 -->
+        <mxCell id="flow3" value="加入申请" style="endArrow=classic;html=1;strokeColor=#1565C0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="250" as="sourcePoint" />
+            <mxPoint x="200" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 学生报名活动 -->
+        <mxCell id="flow4" value="报名请求" style="endArrow=classic;html=1;strokeColor=#1565C0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="260" as="sourcePoint" />
+            <mxPoint x="200" y="740" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- ========== 数据流 - 社团负责人相关 ========== -->
+        <!-- 负责人创建社团 -->
+        <mxCell id="flow5" value="社团创建申请" style="endArrow=classic;html=1;strokeColor=#1565C0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="430" as="sourcePoint" />
+            <mxPoint x="200" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 负责人创建活动 -->
+        <mxCell id="flow6" value="活动创建申请" style="endArrow=classic;html=1;strokeColor=#1565C0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="440" as="sourcePoint" />
+            <mxPoint x="200" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 负责人审核成员 -->
+        <mxCell id="flow7" value="审核指令" style="endArrow=classic;html=1;strokeColor=#1565C0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="450" as="sourcePoint" />
+            <mxPoint x="200" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- ========== 数据流 - 系统管理员相关 ========== -->
+        <!-- 管理员审核社团 -->
+        <mxCell id="flow8" value="审核指令" style="endArrow=classic;html=1;strokeColor=#1565C0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="630" as="sourcePoint" />
+            <mxPoint x="200" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 管理员审核活动 -->
+        <mxCell id="flow9" value="审核指令" style="endArrow=classic;html=1;strokeColor=#1565C0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="150" y="640" as="sourcePoint" />
+            <mxPoint x="200" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- ========== 数据处理与数据存储的连接 ========== -->
+        <!-- P1.1 -> D1 -->
+        <mxCell id="flow10" value="用户记录" style="endArrow=classic;html=1;strokeColor=#4CAF50;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="140" as="sourcePoint" />
+            <mxPoint x="400" y="140" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- D1 -> P1.1 -->
+        <mxCell id="flow11" value="验证信息" style="endArrow=classic;html=1;strokeColor=#4CAF50;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="160" as="sourcePoint" />
+            <mxPoint x="320" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P1.2 -> D2 -->
+        <mxCell id="flow12" value="社团记录" style="endArrow=classic;html=1;strokeColor=#4CAF50;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="290" as="sourcePoint" />
+            <mxPoint x="400" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- D2 -> P1.2 -->
+        <mxCell id="flow13" value="待审核社团" style="endArrow=classic;html=1;strokeColor=#4CAF50;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="310" as="sourcePoint" />
+            <mxPoint x="320" y="310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P1.3 -> D5 -->
+        <mxCell id="flow14" value="成员记录" style="endArrow=classic;html=1;strokeColor=#4CAF50;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="440" as="sourcePoint" />
+            <mxPoint x="400" y="740" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- D5 -> P1.3 -->
+        <mxCell id="flow15" value="待审核成员" style="endArrow=classic;html=1;strokeColor=#4CAF50;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="760" as="sourcePoint" />
+            <mxPoint x="320" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P2.1 -> D3 -->
+        <mxCell id="flow16" value="活动记录" style="endArrow=classic;html=1;strokeColor=#4CAF50;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="590" as="sourcePoint" />
+            <mxPoint x="400" y="440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- D3 -> P2.1 -->
+        <mxCell id="flow17" value="待审核活动" style="endArrow=classic;html=1;strokeColor=#4CAF50;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="460" as="sourcePoint" />
+            <mxPoint x="320" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P2.2 -> D4 -->
+        <mxCell id="flow18" value="报名记录" style="endArrow=classic;html=1;strokeColor=#4CAF50;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="740" as="sourcePoint" />
+            <mxPoint x="400" y="590" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- ========== 查询操作 ========== -->
+        <!-- P2.2 -> D3 (检查活动状态) -->
+        <mxCell id="flow19" value="检查活动状态" style="endArrow=classic;html=1;dashed=1;strokeColor=#FF9800;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="260" y="720" as="sourcePoint" />
+            <mxPoint x="400" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- D3 -> P2.2 (返回活动状态) -->
+        <mxCell id="flow20" value="活动状态信息" style="endArrow=classic;html=1;dashed=1;strokeColor=#FF9800;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="500" as="sourcePoint" />
+            <mxPoint x="260" y="730" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P2.2 -> D4 (检查重复报名) -->
+        <mxCell id="flow21" value="检查重复报名" style="endArrow=classic;html=1;dashed=1;strokeColor=#FF9800;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="280" y="740" as="sourcePoint" />
+            <mxPoint x="400" y="610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- D4 -> P2.2 (返回报名情况) -->
+        <mxCell id="flow22" value="报名情况" style="endArrow=classic;html=1;dashed=1;strokeColor=#FF9800;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="630" as="sourcePoint" />
+            <mxPoint x="280" y="750" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- ========== 返回结果流 ========== -->
+        <!-- P1.1 -> 学生用户 (登录结果) -->
+        <mxCell id="return1" value="登录结果" style="endArrow=classic;html=1;strokeColor=#9C27B0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="180" as="sourcePoint" />
+            <mxPoint x="150" y="270" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P1.2 -> 社团负责人 (申请结果) -->
+        <mxCell id="return2" value="创建结果" style="endArrow=classic;html=1;strokeColor=#9C27B0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="330" as="sourcePoint" />
+            <mxPoint x="150" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P1.3 -> 学生用户 (加入结果) -->
+        <mxCell id="return3" value="申请结果" style="endArrow=classic;html=1;strokeColor=#9C27B0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="480" as="sourcePoint" />
+            <mxPoint x="150" y="280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P2.1 -> 社团负责人 (活动创建结果) -->
+        <mxCell id="return4" value="创建结果" style="endArrow=classic;html=1;strokeColor=#9C27B0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="630" as="sourcePoint" />
+            <mxPoint x="150" y="470" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P2.2 -> 学生用户 (报名结果) -->
+        <mxCell id="return5" value="报名结果" style="endArrow=classic;html=1;strokeColor=#9C27B0;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="780" as="sourcePoint" />
+            <mxPoint x="150" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- ========== 内部处理流 ========== -->
+        <!-- P1.2 -> 管理员 (提交审核) -->
+        <mxCell id="internal1" value="提交审核" style="endArrow=classic;html=1;dashed=1;strokeColor=#F44336;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="270" as="sourcePoint" />
+            <mxPoint x="150" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P2.1 -> 管理员 (提交审核) -->
+        <mxCell id="internal2" value="提交审核" style="endArrow=classic;html=1;dashed=1;strokeColor=#F44336;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="570" as="sourcePoint" />
+            <mxPoint x="150" y="660" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- P1.3 -> 社团负责人 (提交审核) -->
+        <mxCell id="internal3" value="提交审核" style="endArrow=classic;html=1;dashed=1;strokeColor=#F44336;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="420" as="sourcePoint" />
+            <mxPoint x="150" y="480" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

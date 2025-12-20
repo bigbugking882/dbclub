@@ -1,0 +1,175 @@
+<mxfile host="www.iodraw.com" agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/143.0.0.0 Safari/537.36 Edg/143.0.0.0" version="24.7.17">
+  <diagram name="校园社团管理系统数据流图" id="0">
+    <mxGraphModel dx="1752" dy="542" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="827" pageHeight="1169" math="0" shadow="0">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="user" value="普通用户" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;" parent="1" vertex="1">
+          <mxGeometry x="-190" y="80" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="admin" value="管理员" style="ellipse;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;" parent="1" vertex="1">
+          <mxGeometry x="-70" y="390" width="100" height="60" as="geometry" />
+        </mxCell>
+        <mxCell id="D1" value="用户表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" parent="1" vertex="1">
+          <mxGeometry x="500" y="50" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="D2" value="社团表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" parent="1" vertex="1">
+          <mxGeometry x="500" y="150" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="D3" value="活动表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" parent="1" vertex="1">
+          <mxGeometry x="500" y="250" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="D4" value="报名表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" parent="1" vertex="1">
+          <mxGeometry x="500" y="350" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="D5" value="成员表" style="shape=cylinder;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" parent="1" vertex="1">
+          <mxGeometry x="500" y="450" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="P1" value="用户管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" parent="1" vertex="1">
+          <mxGeometry x="200" y="100" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="P2" value="社团管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" parent="1" vertex="1">
+          <mxGeometry x="200" y="200" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="P3" value="成员管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" parent="1" vertex="1">
+          <mxGeometry x="200" y="300" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="P4" value="活动管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" parent="1" vertex="1">
+          <mxGeometry x="200" y="400" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="P5" value="报名管理" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" parent="1" vertex="1">
+          <mxGeometry x="200" y="500" width="120" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="flow1" value="注册信息" style="endArrow=classic;html=1;" parent="1" source="user" target="P1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow2" value="登录凭证" style="endArrow=classic;html=1;" parent="1" source="user" target="P1" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow3" value="登录结果" style="endArrow=classic;html=1;" parent="1" source="P1" target="user" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow4" value="社团信息" style="endArrow=classic;html=1;" parent="1" source="user" target="P2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow5" value="社团列表" style="endArrow=classic;html=1;strokeColor=#4CAF50;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="240" as="sourcePoint" />
+            <mxPoint x="150" y="380" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow6" value="加入申请" style="endArrow=classic;html=1;" parent="1" source="user" target="P3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow7" value="活动信息" style="endArrow=classic;html=1;" parent="1" source="user" target="P4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow8" value="活动列表" style="endArrow=classic;html=1;strokeColor=#4CAF50;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="440" as="sourcePoint" />
+            <mxPoint x="150" y="400" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow9" value="报名请求" style="endArrow=classic;html=1;" parent="1" source="user" target="P5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow10" value="报名结果" style="endArrow=classic;html=1;strokeColor=#4CAF50;" parent="1" source="P5" target="user" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow11" value="审核指令" style="endArrow=classic;html=1;" parent="1" source="admin" target="P2" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow12" value="审核指令" style="endArrow=classic;html=1;" parent="1" source="admin" target="P3" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow13" value="审核指令" style="endArrow=classic;html=1;" parent="1" source="admin" target="P4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="flow14" value="待审核列表" style="endArrow=classic;html=1;strokeColor=#FF9800;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="220" as="sourcePoint" />
+            <mxPoint x="850" y="320" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow15" value="成员列表" style="endArrow=classic;html=1;strokeColor=#FF9800;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="320" as="sourcePoint" />
+            <mxPoint x="850" y="340" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="flow16" value="待审核列表" style="endArrow=classic;html=1;strokeColor=#FF9800;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="420" as="sourcePoint" />
+            <mxPoint x="850" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db1" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="140" as="sourcePoint" />
+            <mxPoint x="500" y="90" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db2" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="110" as="sourcePoint" />
+            <mxPoint x="320" y="160" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db3" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="240" as="sourcePoint" />
+            <mxPoint x="500" y="190" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db4" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="210" as="sourcePoint" />
+            <mxPoint x="320" y="260" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db5" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="340" as="sourcePoint" />
+            <mxPoint x="500" y="490" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db6" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="510" as="sourcePoint" />
+            <mxPoint x="320" y="360" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db7" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="440" as="sourcePoint" />
+            <mxPoint x="500" y="290" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db8" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="310" as="sourcePoint" />
+            <mxPoint x="320" y="460" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db9" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="320" y="540" as="sourcePoint" />
+            <mxPoint x="500" y="390" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="db10" value="" style="endArrow=classic;html=1;dashed=1;" parent="1" edge="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="410" as="sourcePoint" />
+            <mxPoint x="320" y="560" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="mod1" value="检查活动状态" style="endArrow=classic;html=1;dashed=1;strokeColor=#2196F3;" parent="1" source="P5" target="P4" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+        <mxCell id="mod2" value="活动状态" style="endArrow=classic;html=1;dashed=1;strokeColor=#2196F3;" parent="1" source="P4" target="P5" edge="1">
+          <mxGeometry relative="1" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

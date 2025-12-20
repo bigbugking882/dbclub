@@ -71,16 +71,6 @@ CREATE TABLE `activity_signup` (
   UNIQUE KEY `uk_user_activity` (`user_id`, `activity_id`) COMMENT '同一用户不能重复报名同一活动'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='活动报名表';
 
--- 6. 验证码临时存储表（模拟Redis，测试用）
-CREATE TABLE `vercode_temp` (
-  `id` INT(11) PRIMARY KEY AUTO_INCREMENT COMMENT '记录ID',
-  `telephone` VARCHAR(20) NOT NULL COMMENT '手机号',
-  `vercode` VARCHAR(6) NOT NULL COMMENT '6位验证码',
-  `expire_time` DATETIME NOT NULL COMMENT '过期时间（5分钟）',
-  `create_time` DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
-  UNIQUE KEY `uk_telephone` (`telephone`) COMMENT '同一手机号同一时间只能有一个有效验证码'
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='验证码临时存储表';
-
 -- =============================================
 -- 初始化测试数据
 -- =============================================

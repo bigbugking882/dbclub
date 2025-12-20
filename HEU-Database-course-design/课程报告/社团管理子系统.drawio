@@ -1,0 +1,274 @@
+<mxfile>
+  <diagram name="校园社团管理系统模块图">
+    <mxGraphModel>
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        
+        <!-- ========== 标题 ========== -->
+        <mxCell id="title" value="校园社团管理系统模块图" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontSize=18;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="400" y="30" width="300" height="30" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 用户端模块 ========== -->
+        <!-- 用户端容器 -->
+        <mxCell id="client_container" value="用户端" style="swimlane;whiteSpace=wrap;html=1;fillColor=#E3F2FD;strokeColor=#1565C0;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="50" y="100" width="350" height="400" as="geometry" />
+        </mxCell>
+        
+        <!-- 登录模块 -->
+        <mxCell id="module1" value="1. 登录模块&#10;Login.vue&#10;用户登录认证" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="client_container">
+          <mxGeometry x="50" y="30" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 注册模块 -->
+        <mxCell id="module2" value="2. 注册模块&#10;Register.vue&#10;用户注册账号" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="client_container">
+          <mxGeometry x="50" y="110" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 用户主页 -->
+        <mxCell id="module3" value="3. 用户主页&#10;UserHome.vue&#10;用户个人中心" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="client_container">
+          <mxGeometry x="50" y="190" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 社团浏览 -->
+        <mxCell id="module4" value="4. 社团浏览&#10;ClubList.vue&#10;查看所有社团" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="client_container">
+          <mxGeometry x="50" y="270" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 活动中心 -->
+        <mxCell id="module5" value="5. 活动中心&#10;ActivityList.vue&#10;查看所有活动" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;" vertex="1" parent="client_container">
+          <mxGeometry x="50" y="310" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 管理端模块 ========== -->
+        <!-- 管理端容器 -->
+        <mxCell id="admin_container" value="管理端" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F3E5F5;strokeColor=#7B1FA2;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="450" y="100" width="350" height="400" as="geometry" />
+        </mxCell>
+        
+        <!-- 管理员主页 -->
+        <mxCell id="module8" value="8. 管理员主页&#10;AdminHome.vue&#10;系统管理后台" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFECB3;strokeColor=#FF8F00;" vertex="1" parent="admin_container">
+          <mxGeometry x="50" y="30" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 社团管理 -->
+        <mxCell id="module9" value="9. 社团管理&#10;ClubManage.vue&#10;审核和管理社团" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFECB3;strokeColor=#FF8F00;" vertex="1" parent="admin_container">
+          <mxGeometry x="50" y="110" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 活动管理 -->
+        <mxCell id="module10" value="10. 活动管理&#10;ActivityManage.vue&#10;审核和管理活动" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFECB3;strokeColor=#FF8F00;" vertex="1" parent="admin_container">
+          <mxGeometry x="50" y="190" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 成员管理 -->
+        <mxCell id="module11" value="11. 成员管理&#10;MemberManage.vue&#10;管理社团成员" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFECB3;strokeColor=#FF8F00;" vertex="1" parent="admin_container">
+          <mxGeometry x="50" y="270" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 用户管理 -->
+        <mxCell id="module12" value="12. 用户管理&#10;UserManage.vue&#10;管理系统用户" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFECB3;strokeColor=#FF8F00;" vertex="1" parent="admin_container">
+          <mxGeometry x="50" y="310" width="250" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 个人中心子模块 ========== -->
+        <!-- 我的社团 -->
+        <mxCell id="module6" value="6. 我的社团&#10;MyClubs.vue&#10;查看已加入社团" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;" vertex="1" parent="1">
+          <mxGeometry x="110" y="420" width="230" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 我的活动 -->
+        <mxCell id="module7" value="7. 我的活动&#10;MyActivities.vue&#10;查看参与的活动" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;" vertex="1" parent="1">
+          <mxGeometry x="110" y="500" width="230" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 通用组件模块 ========== -->
+        <!-- 通用组件容器 -->
+        <mxCell id="common_container" value="通用组件" style="swimlane;whiteSpace=wrap;html=1;fillColor=#F5F5F5;strokeColor=#616161;fontSize=14;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="150" y="600" width="550" height="120" as="geometry" />
+        </mxCell>
+        
+        <!-- 社团表格组件 -->
+        <mxCell id="module13" value="13. 社团表格&#10;ClubTable.vue&#10;社团数据展示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" vertex="1" parent="common_container">
+          <mxGeometry x="50" y="20" width="220" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- 活动表格组件 -->
+        <mxCell id="module14" value="14. 活动表格&#10;ActivityTable.vue&#10;活动数据展示" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;" vertex="1" parent="common_container">
+          <mxGeometry x="280" y="20" width="220" height="60" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 连接线 ========== -->
+        <!-- 用户主页 -> 我的社团 -->
+        <mxCell id="conn1" value="" style="endArrow=classic;html=1;strokeColor=#1976D2;strokeWidth=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="200" y="320" as="sourcePoint" />
+            <mxPoint x="225" y="420" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 用户主页 -> 我的活动 -->
+        <mxCell id="conn2" value="" style="endArrow=classic;html=1;strokeColor=#1976D2;strokeWidth=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="225" y="320" as="sourcePoint" />
+            <mxPoint x="225" y="500" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 社团浏览 -> 社团管理 -->
+        <mxCell id="conn3" value="审核/管理" style="endArrow=classic;html=1;strokeColor=#D32F2F;strokeWidth=1;fontSize=10;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="330" as="sourcePoint" />
+            <mxPoint x="450" y="330" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 活动中心 -> 活动管理 -->
+        <mxCell id="conn4" value="审核/管理" style="endArrow=classic;html=1;strokeColor=#D32F2F;strokeWidth=1;fontSize=10;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="400" y="370" as="sourcePoint" />
+            <mxPoint x="450" y="370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 通用组件依赖关系 -->
+        <!-- 社团表格被多个组件使用 -->
+        <mxCell id="conn5" value="使用" style="endArrow=classic;html=1;strokeColor=#388E3C;strokeWidth=1;dashed=1;fontSize=10;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="225" y="480" as="sourcePoint" />
+            <mxPoint x="225" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn6" value="使用" style="endArrow=classic;html=1;strokeColor=#388E3C;strokeWidth=1;dashed=1;fontSize=10;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="500" y="330" as="sourcePoint" />
+            <mxPoint x="350" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- 活动表格被多个组件使用 -->
+        <mxCell id="conn7" value="使用" style="endArrow=classic;html=1;strokeColor=#388E3C;strokeWidth=1;dashed=1;fontSize=10;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="225" y="560" as="sourcePoint" />
+            <mxPoint x="405" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="conn8" value="使用" style="endArrow=classic;html=1;strokeColor=#388E3C;strokeWidth=1;dashed=1;fontSize=10;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="370" as="sourcePoint" />
+            <mxPoint x="500" y="620" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <!-- ========== 权限标注 ========== -->
+        <!-- 用户端权限 -->
+        <mxCell id="perm1" value="所有人" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontSize=10;fontColor=#666;" vertex="1" parent="1">
+          <mxGeometry x="70" y="140" width="40" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="perm2" value="普通用户" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontSize=10;fontColor=#666;" vertex="1" parent="1">
+          <mxGeometry x="70" y="300" width="50" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- 管理端权限 -->
+        <mxCell id="perm3" value="管理员" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontSize=10;fontColor=#666;" vertex="1" parent="1">
+          <mxGeometry x="470" y="140" width="40" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- 通用组件权限 -->
+        <mxCell id="perm4" value="复用组件" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontSize=10;fontColor=#666;" vertex="1" parent="1">
+          <mxGeometry x="170" y="640" width="50" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 图例说明 ========== -->
+        <!-- 图例框 -->
+        <mxCell id="legend_box" value="" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFFFFF;strokeColor=#9E9E9E;" vertex="1" parent="1">
+          <mxGeometry x="50" y="750" width="700" height="80" as="geometry" />
+        </mxCell>
+        
+        <!-- 图例标题 -->
+        <mxCell id="legend_title" value="图例说明" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontSize=12;fontStyle=1" vertex="1" parent="1">
+          <mxGeometry x="60" y="755" width="60" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- 颜色图例 -->
+        <mxCell id="legend1" value="用户端模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#C8E6C9;strokeColor=#2E7D32;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="70" y="780" width="100" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend2" value="管理端模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFECB3;strokeColor=#FF8F00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="180" y="780" width="100" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend3" value="个人中心模块" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#E1F5FE;strokeColor=#01579B;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="290" y="780" width="100" height="25" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend4" value="通用组件" style="rounded=1;whiteSpace=wrap;html=1;fillColor=#FFF3E0;strokeColor=#EF6C00;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="400" y="780" width="80" height="25" as="geometry" />
+        </mxCell>
+        
+        <!-- 连接线图例 -->
+        <mxCell id="legend_line1" value="" style="endArrow=classic;html=1;strokeColor=#1976D2;strokeWidth=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="510" y="793" as="sourcePoint" />
+            <mxPoint x="540" y="793" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="legend_text1" value="页面跳转" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="545" y="785" width="50" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="legend_line2" value="" style="endArrow=classic;html=1;strokeColor=#D32F2F;strokeWidth=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="610" y="793" as="sourcePoint" />
+            <mxPoint x="640" y="793" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="legend_text2" value="管理关系" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="645" y="785" width="50" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- 虚线连接线图例 -->
+        <mxCell id="legend_line3" value="" style="endArrow=classic;html=1;strokeColor=#388E3C;strokeWidth=1;dashed=1;" edge="1" parent="1">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="510" y="815" as="sourcePoint" />
+            <mxPoint x="540" y="815" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        
+        <mxCell id="legend_text3" value="组件依赖" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;overflow=hidden;fontSize=10;" vertex="1" parent="1">
+          <mxGeometry x="545" y="807" width="50" height="20" as="geometry" />
+        </mxCell>
+        
+        <!-- ========== 模块编号标注 ========== -->
+        <!-- 模块编号样式 -->
+        <mxCell id="number1" value="①" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FFFFFF;strokeColor=#1976D2;fontSize=12;fontColor=#1976D2;" vertex="1" parent="1">
+          <mxGeometry x="65" y="115" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="number2" value="②" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FFFFFF;strokeColor=#1976D2;fontSize=12;fontColor=#1976D2;" vertex="1" parent="1">
+          <mxGeometry x="65" y="195" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="number3" value="③" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FFFFFF;strokeColor=#1976D2;fontSize=12;fontColor=#1976D2;" vertex="1" parent="1">
+          <mxGeometry x="65" y="275" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="number4" value="④" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FFFFFF;strokeColor=#D32F2F;fontSize=12;fontColor=#D32F2F;" vertex="1" parent="1">
+          <mxGeometry x="465" y="115" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+        <mxCell id="number5" value="⑤" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;fillColor=#FFFFFF;strokeColor=#D32F2F;fontSize=12;fontColor=#D32F2F;" vertex="1" parent="1">
+          <mxGeometry x="465" y="275" width="20" height="20" as="geometry" />
+        </mxCell>
+        
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
